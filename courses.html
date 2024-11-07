@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<title>Courses</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="description" content="Edata project">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="styles/bootstrap4/bootstrap.min.css">
+	<link href="plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<link href="plugins/video-js/video-js.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" type="text/css" href="styles/courses.css">
+	<link rel="stylesheet" type="text/css" href="styles/courses_responsive.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+	<script src="https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js"></script>
+	<script type="module" src="js/checkAuth.js"></script>
+	<!-- Toastr JS -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+	<link rel="stylesheet" href="./styles/toast.css">
+	<script type="module">
+		import { auth, db } from './js/firebaseConfig.js'; // Import Firebase config
+		import { SDK_VERSION } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-app.js';
+		import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
+		import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js';
+
+		toastr.options = {
+			"closeButton": true,
+			"debug": false,
+			"newestOnTop": false,
+			"progressBar": true,
+			"positionClass": "toast-top-center",
+			"preventDuplicates": true,
+			"showDuration": "300",
+			"hideDuration": "1000",
+			"timeOut": "3000",
+			"extendedTimeOut": "1000",
+			"showEasing": "swing",
+			"hideEasing": "linear",
+			"showMethod": "fadeIn",
+			"hideMethod": "fadeOut"
+		};
+		document.addEventListener('DOMContentLoaded', () => {
+			setTimeout(() => {
+				const profileIcon = document.getElementById('profileIcon');
+				const profileSection = document.getElementById('profileSection');
+				const signUpForm = document.getElementById('databaseType');
+				const contactLink = document.querySelector('.main_nav a[href="contact.html"]');
+				const hQuestion = document.getElementById('BtnQuestion');
+
+				hQuestion.addEventListener('click', function () {
+					window.location.href = 'contact.html';
+				});
+
+				const displayUserInfo = (userData) => {
+					const userName = document.getElementById('userName');
+					const userEmail = document.getElementById('userEmail');
+
+					// Display name and email (fallback to 'User' if no name is available)
+					userName.textContent = 'Name : ' + userData.name || 'User';
+					userEmail.textContent = 'Email : ' + userData.email;
+				};
+
+				const myProgressButton = document.getElementById('myProgressButton');
+				myProgressButton.addEventListener('click', function () {
+					window.location.href = 'progress.html'
+				})
+
+				// Function to fetch user data from Firestore
+				const fetchUserData = async (uid) => {
+					try {
+						const userDocRef = doc(db, 'users', uid); // Reference to the user document using UID
+						const docSnapshot = await getDoc(userDocRef); // Fetch the document
+
+						if (docSnapshot.exists()) {
+							const userData = docSnapshot.data(); // Extract the user data
+							if (userData.role === 'admin') {
+								contactLink.textContent = 'Admin Panel'; // Change link text
+								contactLink.setAttribute('href', 'admin.html'); // Change href to admin page
+							}
+							else {
+								contactLink.textContent = 'Contact Us';
+							}
+							displayUserInfo(userData);
+							console.log('user data', userData);
+						} else {
+							console.log('No such document!');
+						}
+					} catch (error) {
+						console.error('Error fetching user data:', error);
+						toastr.error('Error fetching user data');
+					}
+				};
+
+				// Function to toggle between login/register links and profile info
+				const toggleAuthDisplay = (user) => {
+					if (user) {
+						fetchUserData(user.uid);
+					} else {
+						// Redirect user to login page if they're not authenticated
+						window.location.href = `login.html?redirect=courses.html`;
+					}
+				};
+
+				// Monitor auth state changes
+				onAuthStateChanged(auth, (user) => {
+					toggleAuthDisplay(user);
+				});
+				// Handle sign-out
+				document.getElementById('signOutButton').addEventListener('click', () => {
+					signOut(auth).then(() => {
+						console.log('User signed out');
+						toastr.success('Signed out successfully');
+
+						window.location.href = 'index.html'; // Redirect to login page after sign-out
+					}).catch((error) => {
+						toastr.error('Error signing out');
+						console.error('Error signing out:', error);
+					});
+				});
+				profileIcon.onclick = () => {
+					profileSection.style.display = profileSection.style.display === 'block' ? 'none' : 'block';
+				};
+
+				const SqlBtn = document.getElementById('course_button');
+
+				SqlBtn.addEventListener('click', function () {
+					window.location.href = 'sql.html';
+				});
+			});
+
+			// Click anywhere to close the profile section
+			document.addEventListener('click', (event) => {
+				const isClickInsideProfile = profileSection.contains(event.target) || profileIcon.contains(event.target);
+				if (!isClickInsideProfile) {
+					profileSection.style.display = 'none'; // Hide the profile section
+				}
+
+			}, 100);  // Delay to ensure everything is loaded
+		});
+	</script>
+</head>
+
+<body>
+	<div class="super_container">
+		<!-- Header -->
+		<header class="header">
+			<!-- Top Bar -->
+			<div class="top_bar">
+				<div class="top_bar_container">
+					<div class="container">
+						<div class="row">
+							<div class="col">
+								<div class="top_bar_content d-flex flex-row align-items-center justify-content-start">
+									<ul class="top_bar_contact_list">
+										<li>
+											<div id="BtnQuestion" class="BtnQuestionC">Have any questions?</div>
+										</li>
+										<li>
+											<div>Albaiti.ahmed@live.iium.edu.my</div>
+										</li>
+										<li>
+											<div>mazin.muhammed@live.iium.edu.my</div>
+										</li>
+									</ul>
+									<div class="top_bar_login ml-auto" id="authContainer">
+										<div id="profileContainer" style="position: relative;">
+											<i class='fas fa-user-alt' id="profileIcon"
+												style='font-size:24px; color:#fff; cursor: pointer; margin-right: 20px; transition: color 0.3s ease;'>
+											</i>
+											<div id="profileSection" style="display: none; 
+											position: absolute; 
+											right: 0; 
+											top: 35px; 
+											background-color: #fff; 
+											border: 1px solid #ddd; 
+											padding: 20px; 
+											box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); 
+											border-radius: 10px; 
+											z-index: 100; 
+											width: 280px; 
+											transition: all 0.3s ease;">
+												<span id="userName"
+													style="display: block; color: #0E3D57; margin-bottom: 10px; font-size: 0.9rem;">Name
+													:</span>
+												<span id="userEmail"
+													style="display: block; color: #0E3D57; margin-bottom: 20px; font-size: 0.9rem;">Email
+													:</span>
+
+												<button id="myProgressButton" class="myProgressButton">
+													View My Progress
+												</button>
+												<button id="signOutButton" class="signOutButton">
+													Sign Out
+												</button>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Header Content -->
+			<div class="header_container">
+				<div class="container">
+					<div class="row">
+						<div class="col">
+							<div class="header_content d-flex flex-row align-items-center justify-content-start">
+								<div class="logo_container">
+									<a href="#">
+										<div class="logo_content d-flex flex-row align-items-end justify-content-start">
+											<div class="logo_img"><img src="images/assets/DataED_logo.jpg" alt=""
+													style="width: 80px;"></div>
+										</div>
+									</a>
+								</div>
+								<nav class="main_nav_contaner ml-auto">
+									<ul class="main_nav">
+										<li><a href="index.html">home</a></li>
+										<li><a href="about.html">about us</a></li>
+										<li><a href="courses.html">lessons</a></li>
+										<!-- <li><a href="news.html">news</a></li> -->
+										<li id="contactLinkItem"><a href="contact.html"></a></li>
+									</ul>
+								</nav>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Header Search Panel -->
+			<div class="header_search_container">
+				<div class="container">
+					<div class="row">
+						<div class="col">
+							<div class="header_search_content d-flex flex-row align-items-center justify-content-end">
+								<form action="#" class="header_search_form">
+									<input type="search" class="search_input" placeholder="Search" required="required">
+									<button
+										class="header_search_button d-flex flex-column align-items-center justify-content-center">
+										<i class="fa fa-search" aria-hidden="true"></i>
+									</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<!-- Menu -->
+
+		<div class="menu d-flex flex-column align-items-end justify-content-start text-right menu_mm trans_400">
+			<div class="menu_close_container">
+				<div class="menu_close">
+					<div></div>
+					<div></div>
+				</div>
+			</div>
+			<div class="search">
+				<form action="#" class="header_search_form menu_mm">
+					<input type="search" class="search_input menu_mm" placeholder="Search" required="required">
+					<button
+						class="header_search_button d-flex flex-column align-items-center justify-content-center menu_mm">
+						<i class="fa fa-search menu_mm" aria-hidden="true"></i>
+					</button>
+				</form>
+			</div>
+			<nav class="menu_nav">
+				<ul class="menu_mm">
+					<li class="menu_mm"><a href="index.html">Home</a></li>
+					<li class="menu_mm"><a href="courses.html">Courses</a></li>
+					<li class="menu_mm"><a href="instructors.html">Instructors</a></li>
+					<li class="menu_mm"><a href="#">Events</a></li>
+					<li class="menu_mm"><a href="blog.html">Blog</a></li>
+					<li class="menu_mm"><a href="contact.html">Contact Us</a></li>
+				</ul>
+			</nav>
+			<div class="menu_extra">
+				<div class="menu_phone"><span class="menu_title">phone:</span>(009) 35475 6688933 32</div>
+				<div class="menu_social">
+					<span class="menu_title">follow us</span>
+					<ul>
+						<li><a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
+						<li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+						<li><a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+						<li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<!-- Home -->
+
+		<div class="home">
+			<!-- Background image artist https://unsplash.com/@thepootphotographer -->
+			<div class="home_background parallax_background parallax-window" data-parallax="scroll"
+				data-image-src="images/courses.jpg" data-speed="0.8"></div>
+			<div class="home_container">
+				<div class="container">
+					<div class="row">
+						<div class="col">
+							<div class="home_content text-center">
+								<div class="home_title">Start Your Database Learning Journey</div>
+								<div class="breadcrumbs">
+									<ul>
+										<li><a href="index.html">Home</a></li>
+										<li>Lessons</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Courses -->
+
+		<div class="courses">
+			<div class="container">
+		
+					<div class="col-lg-10 offset-lg-1"
+						style="display: flex; flex-direction: column; align-items: center; gap: 3rem;">
+						<h4 class="center-text">Begin your journey to mastering databases with our comprehensive courses
+							on SQL. Whether you're just starting or looking to deepen your knowledge, we offer
+							resources and lessons tailored to your needs. Dive in and start learning today!
+						</h4>
+						<div>
+							<button id="course_button" class="course_button">
+								<span>Go To The SQL Course Page!</span>
+								<span class="button_arrow"><i class="fa fa-angle-right" aria-hidden="true"></i></span>
+							</button>
+						</div>
+					</div>
+
+				<!-- Featured Course -->
+				<div class="row featured_row">
+					<div class="col-lg-6 featured_col">
+						<div class="featured_content">
+							<div class="featured_title">
+								<h3><a href="courses.html">Basic SQL Database Course</a></h3>
+							</div>
+							<div class="featured_text">
+								Discover the fundamentals of SQL databases with our beginner-friendly courses.
+								Whether you're looking to understand relational database concepts or explore the
+								flexibility of SQL, our interactive tutorials and hands-on projects will equip you
+								with the essential skills to manage and manipulate data effectively. Start your learning
+								journey today and take your first step towards becoming a database expert!
+							</div>
+						</div>
+					</div>
+					<div class="col-lg-6 featured_col">
+						<div class="featured_background"
+							style="background-image:url(images/assets/glenn-carstens-peters-npxXWgQ33ZQ-unsplash.jpg)">
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+
+	</div>
+
+	<script src="js/jquery-3.2.1.min.js"></script>
+	<script src="styles/bootstrap4/popper.js"></script>
+	<script src="styles/bootstrap4/bootstrap.min.js"></script>
+	<script src="plugins/easing/easing.js"></script>
+	<script src="plugins/parallax-js-master/parallax.min.js"></script>
+	<script src="js/courses.js"></script>
+</body>
+
+</html>
+
+<!-- Footer -->
+
+<footer class="footer">
+	<div class="container">
+		<div class="row">
+
+			<!-- About -->
+			<div class="col-lg-3 footer_col">
+				<div class="footer_about">
+					<div class="logo_container">
+						<a href="index.html">
+							<div class="logo_content d-flex flex-row align-items-end justify-content-start">
+								<div class="logo_img"><img src="images/assets/DataED_logo.jpg" alt=""
+										style="width: 80px;"></div>
+							</div>
+						</a>
+					</div>
+					<div class="footer_about_text">
+						<p>Welcome to our website. We are dedicated to providing quality content and exceptional service
+							to our users. Your feedback is valuable to us as we strive for continuous improvement.</p>
+					</div>
+					<div class="footer_social">
+						<ul>
+							<li><a href="https://plus.google.com/" target="_blank" rel="noopener noreferrer"><i
+										class="fab fa-google-plus" aria-hidden="true"></i></a></li>
+							<li><a href="https://www.pinterest.com/" target="_blank" rel="noopener noreferrer"><i
+										class="fab fa-pinterest" aria-hidden="true"></i></a></li>
+							<li><a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"><i
+										class="fab fa-facebook" aria-hidden="true"></i></a></li>
+							<li><a href="https://x.com/" target="_blank" rel="noopener noreferrer"><i
+										class="fab fa-twitter" aria-hidden="true"></i></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-lg-3 footer_col">
+				<div class="footer_links">
+					<div class="footer_title">Quick menu</div>
+					<ul class="footer_list">
+						<li><a href="index.html">Home</a></li>
+						<li><a href="about.html">About us</a></li>
+						<li><a href="contact.html">Contact</a></li>
+					</ul>
+				</div>
+			</div>
+
+
+			<div class="col-lg-3 footer_col">
+				<div class="footer_contact">
+					<div class="footer_title">Contact Us</div>
+					<div class="footer_contact_info">
+						<div class="footer_contact_item">
+							<div class="footer_contact_title">Address:</div>
+							<div class="footer_contact_line">Jalan Gombak, 53100 Kuala Lumpur,
+								Malaysia</div>
+						</div>
+						<div class="footer_contact_item">
+							<div class="footer_contact_title">Phone:</div>
+							<div class="footer_contact_line">+966 532666580</div>
+						</div>
+						<div class="footer_contact_item">
+							<div class="footer_contact_title">Email:</div>
+							<div class="footer_contact_line">Albaiti.ahmed@live.iium.edu.my</div>
+							<div class="footer_contact_line">mazin.muhammed@live.iium.edu.my</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</footer>
+
+</div>
+
+<script src="js/jquery-3.2.1.min.js"></script>
+<script src="styles/bootstrap4/popper.js"></script>
+<script src="styles/bootstrap4/bootstrap.min.js"></script>
+<script src="plugins/easing/easing.js"></script>
+<script src="plugins/parallax-js-master/parallax.min.js"></script>
+<script src="js/courses.js"></script>
+</body>
+
+</html>

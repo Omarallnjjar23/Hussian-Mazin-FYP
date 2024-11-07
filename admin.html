@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Content Management</title>
+    <link rel="stylesheet" type="text/css" href="styles/bootstrap4/bootstrap.min.css">
+
+    <link href="plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="plugins/video-js/video-js.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="styles/main_styles.css">
+    <link rel="stylesheet" href="./styles/admin.css">
+    <link rel="stylesheet" href="./styles/toast.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Toastr JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script type="module">
+
+        import { auth, db } from './js/firebaseConfig.js';
+        import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js';
+        import {
+            doc,
+            setDoc,
+            updateDoc,
+            deleteDoc,
+            collection,
+            addDoc,
+            getDoc,
+            getDocs,
+            where,
+            query,
+            orderBy,
+            arrayUnion,
+            writeBatch,
+        } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
+
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-top-center",
+            "preventDuplicates": true,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "3000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+
+        // Check for Admin Authentication
+        document.addEventListener('DOMContentLoaded', () => {
+
+            console.log('toastr', toastr);
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+
+                    toggleAuthDisplay(user);
+                    console.log('current user', user ? user.email : null);
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    const userData = userDoc.data();
+
+                    if (userData && userData.role === "admin") {
+                        toastr.success("Welcome, Admin!", "success");
+                    } else {
+                        toastr.warning("Access Denied: Admins only", "warning"); // Show a warning toast
+                        setTimeout(() => { window.location.href = 'index.html'; }, 3000); // Adjust delay to allow user to read the toast message
+                    }
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+
+            const toggleAuthDisplay = (user) => {
+                const authLinks = document.getElementById('authLinks');
+                const profileIcon = document.getElementById('profileIcon');
+                const userName = document.getElementById('userName');
+                const userEmail = document.getElementById('userEmail');
+
+                // Check if all required elements exist before proceeding
+                if (!authLinks || !profileIcon || !userName || !userEmail) {
+                    toastr.error('Missing elements in the header.',);
+                    return;
+                }
+
+                if (user) {
+                    // Hide login/register links and show profile icon
+                    console.log('wallah user');
+
+                    authLinks.style.display = 'none';
+                    profileIcon.style.display = 'block';
+
+                    // Display user's email
+                    userEmail.textContent = `Email: ${user.email}`;
+
+                    // Fetch user's custom data from Firestore
+                    const userDocRef = doc(db, 'users', user.uid);
+                    getDoc(userDocRef).then((docSnapshot) => {
+                        if (docSnapshot.exists()) {
+                            const userData = docSnapshot.data();
+                            userName.textContent = 'Name: ' + (userData.name || 'User'); // Fallback to 'User' if no name
+                            userEmail.textContent = 'Email: ' + (userData.email || user.email);
+                        }
+                    }).catch((error) => {
+                        console.error('Error fetching user data:', 'error');
+                    });
+                } else {
+                    // Show login/register links and hide profile icon
+                    authLinks.style.display = 'block';
+                    profileIcon.style.display = 'none';
+                    userName.textContent = ''; // Clear previous user data
+                    userEmail.textContent = '';
+                }
+            };
+
+            // function to reorder the numbering of lessons 
+            const renumberLessons = async (category) => {
+                const lessonsRef = collection(db, 'Courses', 'SQL', 'lessons');
+                const lessonsSnapshot = await getDocs(query(lessonsRef, orderBy('lessonNumber', 'asc')));
+
+                let lessonNumber = 1;
+
+                const batch = writeBatch(db); // Use a batch to update all lessons in one go
+
+                lessonsSnapshot.forEach((doc) => {
+                    const lessonRef = doc.ref;
+                    batch.update(lessonRef, { lessonNumber: lessonNumber });
+                    lessonNumber++;
+                });
+
+                // Commit the batch
+                await batch.commit();
+                toaster.success('Lessons renumbered successfully', 'success');
+            };
+
+            // Add a Lesson
+            document.getElementById('lessonForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const title = document.getElementById('lessonTitle').value;
+                const content = document.getElementById('lessonContent').value;
+                const videoUrl = document.getElementById('lessonVideoUrl').value;
+
+                try {
+                    // Check if a lesson with the same title already exists in this category
+                    const lessonsRef = collection(db, 'Courses', 'SQL', 'lessons');
+                    const q = query(lessonsRef, where('title', '==', title));
+                    const existingLessonSnapshot = await getDocs(q);
+
+                    if (!existingLessonSnapshot.empty) {
+                        toastr.warning("A lesson with this title already exists. Please choose a different title.");
+                        return; // Stop the process if a duplicate title is found
+                    }
+
+                    // If no duplicate, proceed to add the new lesson
+                    const lessonsSnapshot = await getDocs(query(lessonsRef, orderBy('lessonNumber', 'asc')));
+                    const nextLessonNumber = lessonsSnapshot.size + 1; // Assign the next available lesson number
+
+                    const lessonDocRef = await addDoc(lessonsRef, {
+                        lessonNumber: nextLessonNumber,
+                        title,
+                        textContent: content,
+                        videoUrl,
+                    });
+
+                    toastr.success("Lesson added successfully");
+                    await renumberLessons();
+                    document.getElementById('lessonForm').reset();
+
+                } catch (error) {
+                    console.error("Error adding lesson: ", 'error');
+                }
+            });
+
+            //Edit lesson content by tittle 
+            document.getElementById('editLessonForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const lessonTitle = document.getElementById('EditLessonTittle').value; // Get the selected lesson title
+                const updatedContent = document.getElementById('editLessonContent').value;
+                const updatedVideoUrl = document.getElementById('editVideoUrl').value;
+
+                if (!lessonTitle) {
+                    toastr.warning("No lesson selected.");
+                    return;
+                }
+
+                try {
+                    const lessonsRef = collection(db, 'Courses', 'SQL', 'lessons');
+                    const q = query(lessonsRef, where('title', '==', lessonTitle)); // Query using the lesson title
+                    const querySnapshot = await getDocs(q);
+
+                    if (!querySnapshot.empty) {
+                        const lessonDoc = querySnapshot.docs[0]; // Assuming title is unique
+                        await updateDoc(lessonDoc.ref, {
+                            textContent: updatedContent,
+                            videoUrl: updatedVideoUrl
+                        });
+
+                        toastr.success("Lesson updated successfully");
+                        document.getElementById('editLessonForm').reset();
+                    } else {
+                        toastr.warning("No lesson found with the provided title.");
+                    }
+                } catch (error) {
+                    toastr.error("Error updating lesson: ");
+                }
+            });
+
+            const categorySelect = document.getElementById('categorySelect');
+            const deleteLessonForm = document.getElementById('deleteLessonForm');
+
+            async function populateLessons(lessonSelectId) {
+                const lessonSelect = document.getElementById(lessonSelectId);
+                lessonSelect.innerHTML = "<option value=''>Select a lesson</option>";
+
+                try {
+                    const lessonsRef = collection(db, 'Courses', 'SQL', 'lessons');
+                    const lessonsSnapshot = await getDocs(query(lessonsRef, orderBy('lessonNumber', 'asc')));
+
+                    lessonsSnapshot.forEach((doc) => {
+                        const lesson = doc.data();
+                        const option = document.createElement('option');
+                        option.value = lesson.title;
+                        option.textContent = lesson.title;
+                        option.setAttribute('data-id', doc.id);
+
+                        lessonSelect.appendChild(option);
+                    });
+
+                    if (lessonsSnapshot.empty) {
+                        toastr.warning("No lessons found for SQL.");
+                    }
+                } catch (error) {
+                    toastr.error("Error fetching lessons: ", error);
+                }
+            }
+
+            // Initialize the event listeners for both forms
+            populateLessons('lessonSelect');
+            populateLessons('quizLessonId');
+            populateLessons('EditLessonTittle');
+
+            // Handle lesson deletion when the form is submitted
+            deleteLessonForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                console.log('deleteLessonForm button clicked');
+
+                const lessonTitleToDelete = lessonSelect.value;
+                console.log("Lesson title to delete:", lessonTitleToDelete);
+
+                if (!lessonTitleToDelete) {
+                    toastr.warning("Please select a lesson to delete.");
+                    return;
+                }
+
+                try {
+                    // Query to find the document with the matching title
+                    const lessonsRef = collection(db, 'Courses', 'SQL', 'lessons');
+                    const q = query(lessonsRef, where("title", "==", lessonTitleToDelete));
+
+                    const querySnapshot = await getDocs(q);
+
+                    // Check if a document with this title exists
+                    if (querySnapshot.empty) {
+                        toastr.error("Lesson not found.");
+                        return;
+                    }
+
+                    // Assuming only one document will match the title, get its ID and delete it
+                    const lessonDoc = querySnapshot.docs[0];
+                    const lessonDocRef = doc(db, 'Courses', 'SQL', 'lessons', lessonDoc.id);
+
+                    // Delete the lesson document
+                    await deleteDoc(lessonDocRef);
+                    toastr.success("Lesson deleted successfully!");
+
+                    // Optionally, remove the deleted lesson from the dropdown
+                    lessonSelect.remove(lessonSelect.selectedIndex);
+
+                } catch (error) {
+                    toastr.error("Error deleting lesson: " + error.message);
+                    console.error("Error deleting lesson:", error);
+                }
+            });
+
+            // Add a Quiz Question
+            document.getElementById('quizForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                // Get values from the form
+                const lessonTitle = document.getElementById('quizLessonId').value.trim();
+                const questionText = document.getElementById('quizQuestion').value.trim();
+                const option1 = document.getElementById('option1').value.trim();
+                const option2 = document.getElementById('option2').value.trim();
+                const option3 = document.getElementById('option3').value.trim();
+                const option4 = document.getElementById('option4').value.trim();
+                // const correctAnswer = parseInt(document.getElementById('correctAnswer').value, 10) - 1;
+                const correctAnswer = parseInt(document.getElementById('correctAnswer').value, 10);
+
+
+                // Validate input
+                if (!lessonTitle || !questionText || !option1 || !option2 || !option3 || !option4) {
+                    toastr.warning("Please fill in all fields.");
+                    return;
+                }
+                console.log('lessonTitle :', lessonTitle);
+                console.log('questionText :', questionText);
+                console.log('option1 :', option1);
+                console.log('option2 :', option2);
+                console.log('option3 :', option3);
+                console.log('option4 :', option4);
+                console.log('correctAnswer :', correctAnswer);
+
+                const options = [option1, option2, option3, option4];
+
+                // Create question object
+                const newQuestion = {
+                    questionText: questionText,
+                    answers: options.map((option, index) => ({
+                        answer: option,
+                        isCorrect: index === correctAnswer
+                    }))
+                };
+                try {
+                    // Step 1: Find the lesson document with the given title
+                    const lessonsRef = collection(db, 'Courses', 'SQL', 'lessons');
+                    const q = query(lessonsRef, where('title', '==', lessonTitle))
+                    const lessonSnapshot = await getDocs(q);
+                    if (lessonSnapshot.empty) {
+                        toastr.warning("No lesson found with this title");
+                        return;
+                    }
+
+                    const lessonDoc = lessonSnapshot.docs[0];
+                    const quizRef = doc(lessonDoc.ref, 'quiz', 'quizDoc');
+                    const quizDocSnapshot = await getDoc(quizRef);
+
+                    const questionsRef = collection(quizRef, 'questions'); // Name the questions document
+                    // const newQuestionRef = doc(questionsRef);
+
+                    await addDoc(questionsRef, newQuestion); // Store the new question
+                    toastr.success("Quiz question added successfully");
+                    document.getElementById('quizForm').reset();
+
+                } catch (error) {
+                    toastr.error("Error adding quiz question");
+                }
+            });
+
+            // Handle sign-out
+            const signOutButton = document.getElementById('signOutButton');
+            const profileContainer = document.getElementById('profileContainer');
+
+            if (signOutButton && profileContainer) {
+                signOutButton.addEventListener('click', () => {
+                    signOut(auth).then(() => {
+                        console.log('User signed out');
+                        profileContainer.style.display = "none";
+                        userName.textContent = ''; // Clear user info on sign out
+                        userEmail.textContent = '';
+                    }).catch((error) => {
+                        toastr.error('Error signing out:');
+                    });
+                });
+            } else {
+                toastr.warning('Sign-out button or profile container not found.');
+            }
+
+            // Profile icon toggle
+            const profileIcon = document.getElementById('profileIcon');
+            const profileSection = document.getElementById('profileSection');
+
+            profileIcon.addEventListener('click', () => {
+                console.log('profileIcon clicked ');
+
+                profileSection.style.display = profileSection.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Click anywhere to close the profile section
+            document.addEventListener('click', (event) => {
+                const isClickInsideProfile = profileSection.contains(event.target) || profileIcon.contains(event.target);
+                if (!isClickInsideProfile) {
+                    profileSection.style.display = 'none'; // Hide the profile section
+                }
+            });
+
+        })
+    </script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+
+        <!-- Top Bar -->
+        <div class="top_bar">
+            <div class="top_bar_container">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <div class="top_bar_content d-flex flex-row align-items-center justify-content-start">
+                                <ul class="top_bar_contact_list">
+                                    <li>
+                                        <div class="question">Have any questions?</div>
+                                    </li>
+                                    <li>
+                                        <div>Albaiti.ahmed@live.iium.edu.my</div>
+                                    </li>
+                                    <li>
+                                        <div>mazin.muhammed@live.iium.edu.my</div>
+                                    </li>
+                                </ul>
+                                <div class="top_bar_login ml-auto" id="authContainer">
+                                    <ul id="authLinks" style="list-style: none; margin: 0; padding: 0; display: flex;">
+                                        <li style="margin-right: 1px;"><a href="signUp.html"
+                                                style="text-decoration: none; color: #fff;">Register</a></li>
+                                        <li><a href="login.html" style="text-decoration: none; color: #fff;">Login</a>
+                                        </li>
+                                    </ul>
+                                    <div id="profileContainer" style="position: relative; display: inline-block;">
+                                        <i class="fas fa-user-alt" id="profileIcon"
+                                            style="font-size: 24px; color: #fff; cursor: pointer; margin-right: 20px; transition: color 0.3s ease;"></i>
+
+                                        <div id="profileSection" style="display: none; 
+												position: absolute; 
+												right: 0; 
+												top: 35px; 
+												background-color: #fff; 
+												border: 1px solid #ddd; 
+												padding: 20px; 
+												box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); 
+												border-radius: 10px; 
+												z-index: 100; 
+												width: 280px; 
+												transition: all 0.3s ease;">
+                                            <span id="userName"
+                                                style="display: block; color: #0E3D57; margin-bottom: 10px; font-size: 0.9rem;">Name
+                                                :</span>
+                                            <span id="userEmail"
+                                                style="display: block; color: #0E3D57; margin-bottom: 20px; font-size: 0.9rem;">Email
+                                                :</span>
+                                            <button id="signOutButton" class="signOutButton">
+                                                Sign Out
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header Content -->
+        <div class="header_container">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="header_content d-flex flex-row align-items-center justify-content-start">
+                            <div class="logo_container">
+                                <a href="#">
+                                    <div class="logo_content d-flex flex-row align-items-end justify-content-start">
+                                        <div class="logo_img"><img src="images/assets/DataED_logo.jpg" alt=""
+                                                style="width: 80px;"></div>
+                                    </div>
+                                </a>
+                            </div>
+                            <nav class="main_nav_contaner ml-auto">
+                                <ul class="main_nav">
+                                    <li><a href="index.html">home</a></li>
+                                    <li><a href="users.html">Users</a></li>
+                                    <li><a href="courses.html">lessons</a></li>
+                                </ul>
+                                <div class="hamburger menu_mm">
+                                    <i class="fa fa-bars menu_mm" aria-hidden="true"></i>
+                                </div>
+                            </nav>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Header Search Panel -->
+        <div class="header_search_container">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="header_search_content d-flex flex-row align-items-center justify-content-end">
+                            <form action="#" class="header_search_form">
+                                <input type="search" class="search_input" placeholder="Search" required="required">
+                                <button
+                                    class="header_search_button d-flex flex-column align-items-center justify-content-center">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-content">
+        <h1>Admin Panel - Content Management</h1>
+
+        <section id="addLessonSection">
+            <h2>Add New Lesson</h2>
+            <form id="lessonForm">
+                <label for="lessonTitle">Lesson Title:</label>
+                <input type="text" id="lessonTitle" required><br>
+                <label for="lessonContent">Lesson Content:</label>
+                <textarea id="lessonContent" rows="5" required></textarea><br>
+                <label for="lessonVideoUrl">Video URL (optional):</label>
+                <input type="url" id="lessonVideoUrl"><br>
+                <button type="submit">Add Lesson</button>
+            </form>
+        </section>
+
+        <!-- Form to Delete Lesson -->
+        <section id="deleteLessonSection">
+            <h2>Delete Lesson</h2>
+            <form id="deleteLessonForm">
+                <label for="lessonSelect">Select Lesson to Delete:</label>
+                <select id="lessonSelect" required>
+                    <option value="" disabled selected>Select a lesson</option>
+                </select>
+                <button type="submit">Delete Lesson</button>
+            </form>
+        </section>
+
+        <!-- Form to Add Quiz Questions -->
+        <section id="addQuizSection">
+            <h2>Add Quiz Questions</h2>
+            <form id="quizForm">
+                <label for="quizLessonId">Select Lesson Title:</label>
+                <select id="quizLessonId" required>
+                    <option value="" disabled selected>Select a lesson</option>
+                </select>
+
+                <label for="quizQuestion">Question:</label>
+                <textarea id="quizQuestion" rows="3" required></textarea><br>
+
+                <label for="option1">Option 1:</label>
+                <input type="text" id="option1" required><br>
+
+                <label for="option2">Option 2:</label>
+                <input type="text" id="option2" required><br>
+
+                <label for="option3">Option 3:</label>
+                <input type="text" id="option3" required><br>
+
+                <label for="option4">Option 4:</label>
+                <input type="text" id="option4" required><br>
+
+                <label for="correctAnswer">Correct Answer:</label>
+                <select id="correctAnswer" required>
+                    <option value="" disabled selected>Choose Correct Option</option>
+                    <option value="0">Option 1</option>
+                    <option value="1">Option 2</option>
+                    <option value="2">Option 3</option>
+                    <option value="3">Option 4</option>
+                </select><br>
+                <button type="submit">Add Quiz Question</button>
+            </form>
+        </section>
+
+        <!-- Form to Edit Lesson -->
+        <section id="editLessonSection">
+            <h2>Edit Lesson</h2>
+            <form id="editLessonForm">
+                <label for="EditLessonTittle">Select Lesson Title:</label>
+                <select id="EditLessonTittle" required>
+                    <option value="" disabled selected>Select a lesson</option>
+                </select>
+
+                <input type="text" id="editLessonContent" placeholder="Updated Content">
+                <input type="text" id="editVideoUrl" placeholder="Updated Video URL">
+                <button type="submit">Update Lesson</button>
+            </form>
+        </section>
+    </div>
+
+    <!-- Footer-->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+
+                <!-- About -->
+                <div class="col-lg-3 footer_col">
+                    <div class="footer_about">
+                        <div class="logo_container">
+                            <a href="index.html">
+                                <div class="logo_content d-flex flex-row align-items-end justify-content-start">
+                                    <div class="logo_img"><img src="images/assets/DataED_logo.jpg" alt=""
+                                            style="width: 80px;"></div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="footer_about_text">
+                            <p>Welcome to our website. We are dedicated to providing quality content and exceptional
+                                service to our users. Your feedback is valuable to us as we strive for continuous
+                                improvement.</p>
+                        </div>
+                        <div class="footer_social">
+                            <ul>
+                                <li><a href="https://plus.google.com/" target="_blank" rel="noopener noreferrer"><i
+                                            class="fab fa-google-plus" aria-hidden="true"></i></a></li>
+                                <li><a href="https://www.pinterest.com/" target="_blank" rel="noopener noreferrer"><i
+                                            class="fab fa-pinterest" aria-hidden="true"></i></a></li>
+                                <li><a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"><i
+                                            class="fab fa-facebook" aria-hidden="true"></i></a></li>
+                                <li><a href="https://x.com/" target="_blank" rel="noopener noreferrer"><i
+                                            class="fab fa-twitter" aria-hidden="true"></i></a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-3 footer_col">
+                    <div class="footer_links">
+                        <div class="footer_title">Quick menu</div>
+                        <ul class="footer_list">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="about.html">About us</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-3 footer_col">
+                    <div class="footer_contact">
+                        <div class="footer_title">Contact Us</div>
+                        <div class="footer_contact_info">
+                            <div class="footer_contact_item">
+                                <div class="footer_contact_title">Address:</div>
+                                <div class="footer_contact_line">Jalan Gombak, 53100 Kuala Lumpur,
+                                    Malaysia</div>
+                            </div>
+                            <div class="footer_contact_item">
+                                <div class="footer_contact_title">Phone:</div>
+                                <div class="footer_contact_line">+966 532666580</div>
+                            </div>
+                            <div class="footer_contact_item">
+                                <div class="footer_contact_title">Email:</div>
+                                <div class="footer_contact_line">Albaiti.ahmed@live.iium.edu.my</div>
+                                <div class="footer_contact_line">mazin.muhammed@live.iium.edu.my</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>

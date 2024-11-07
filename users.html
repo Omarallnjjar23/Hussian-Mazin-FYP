@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Content Management</title>
+    <link rel="stylesheet" type="text/css" href="styles/bootstrap4/bootstrap.min.css">
+    <link href="plugins/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="plugins/video-js/video-js.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="styles/main_styles.css">
+    <link rel="stylesheet" href="./styles/admin.css"> <!-- Optional for styling -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script type="module">
+        import { auth, db } from './js/firebaseConfig.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js";
+        import {
+            doc,
+            setDoc,
+            updateDoc,
+            deleteDoc,
+            collection,
+            addDoc,
+            getDoc,
+            getDocs,
+            where,
+            query,
+            orderBy,
+            arrayUnion,
+            writeBatch,
+        } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
+
+        // Check for Admin Authentication
+        document.addEventListener('DOMContentLoaded', () => {
+
+            onAuthStateChanged(auth, async (user) => {
+                if (user) {
+
+                    toggleAuthDisplay(user);
+                    console.log('current user', user ? user.email : null);
+                    const userDoc = await getDoc(doc(db, "users", user.uid));
+                    const userData = userDoc.data();
+
+                    if (userData && userData.role === "admin") {
+                        console.log("Welcome Admin!"); // Display admin content
+                    } else {
+                        alert("Access Denied: Admins only");
+                        window.location.href = 'home.html'; // Redirect to home if not an admin
+                    }
+                } else {
+                    window.location.href = 'login.html';
+                }
+            });
+
+            const toggleAuthDisplay = (user) => {
+                const authLinks = document.getElementById('authLinks');
+                const profileIcon = document.getElementById('profileIcon');
+                const userName = document.getElementById('userName');
+                const userEmail = document.getElementById('userEmail');
+
+                // Check if all required elements exist before proceeding
+                if (!authLinks || !profileIcon || !userName || !userEmail) {
+                    console.error('Missing elements in the header.');
+                    return;
+                }
+
+                if (user) {
+                    // Hide login/register links and show profile icon
+                    console.log('wallah user');
+
+                    authLinks.style.display = 'none';
+                    profileIcon.style.display = 'block';
+
+                    // Display user's email
+                    userEmail.textContent = `Email: ${user.email}`;
+
+                    // Fetch user's custom data from Firestore
+                    const userDocRef = doc(db, 'users', user.uid);
+                    getDoc(userDocRef).then((docSnapshot) => {
+                        if (docSnapshot.exists()) {
+                            const userData = docSnapshot.data();
+                            userName.textContent = 'Name: ' + (userData.name || 'User'); // Fallback to 'User' if no name
+                            userEmail.textContent = 'Email: ' + (userData.email || user.email);
+                        }
+                    }).catch((error) => {
+                        console.error('Error fetching user data:', error);
+                    });
+                } else {
+                    // Show login/register links and hide profile icon
+                    authLinks.style.display = 'block';
+                    profileIcon.style.display = 'none';
+                    userName.textContent = ''; // Clear previous user data
+                    userEmail.textContent = '';
+                }
+            };
+
+            const userDataBody = document.getElementById('userDataBody');
+
+            // Function to fetch user data, progress, and lesson titles
+            const fetchUsersData = async () => {
+                try {
+                    const usersQuerySnapshot = await getDocs(collection(db, "users"));
+
+                    // Loop through each user document
+                    usersQuerySnapshot.forEach(async (docI) => {
+                        const userData = docI.data();
+
+                        // Fetch the quizzes object from the user's data
+                        const quizzes = userData.quizzes || {};  // Handle cases where quizzes may not exist
+
+                        // Count the number of lessons completed (i.e., the number of keys in the quizzes object)
+                        const lessonsCompleted = Object.keys(quizzes).length;
+                        let quizResults = [];
+
+                        // Iterate through the quizzes object (each key is a lesson ID)
+                        for (const lessonId in quizzes) {
+                            if (quizzes.hasOwnProperty(lessonId)) {
+                                const quiz = quizzes[lessonId];
+                                const marks = quiz.marks || '0'; // Handle cases where marks may not exist
+
+                                let lessonTitle = `0 Lessons Completed`; // Default lesson title to lessonId
+                                let lessonDoc;
+                                console.log('lessonId : ', lessonId);
+
+                                try {
+                                    // Try fetching from SQL lessons collection first
+                                    lessonDoc = await getDoc(doc(db, "Courses", "SQL", "lessons", lessonId));
+
+                                    // if (!lessonDoc.exists()) {
+                                    //     // If not found in SQL, try fetching from NoSQL lessons collection
+                                    //     lessonDoc = await getDoc(doc(db, "Courses", "NoSQL", "lessons", lessonId));
+                                    // }
+
+                                    // If the lesson document exists, update the lesson title
+                                    if (lessonDoc.exists()) {
+                                        lessonTitle = lessonDoc.data().title;  // Fetch the title from the document
+                                    }
+                                } catch (error) {
+                                    console.error(`Error fetching lesson data for ${lessonId}:`, error);
+                                }
+
+                                // Push the lesson title and marks into the quizResults array
+                                quizResults.push({ title: lessonTitle, marks: marks });
+                            }
+                        }
+
+                        // Append user data to table
+                        const userRow = document.createElement('tr');
+                        userRow.innerHTML = `
+                <td>${userData.name || 'N/A'}</td>
+                    <td>${userData.email || 'N/A'}</td>
+                    <td>${lessonsCompleted > 0 ? lessonsCompleted : '0'}</td>
+                    <td class='lesson-title'>
+                        ${quizResults.length > 0 ? quizResults.map(result => `<div>${result.title}</div>`).join('') : 'No Lessons taken'}
+                    </td>
+                    <td>
+                        ${quizResults.length > 0 ? quizResults.map(result => `<div>${result.marks}/10</div>`).join('') : 'No quizzes taken'}
+                </td>
+            `;
+                        userDataBody.appendChild(userRow);
+                    });
+                } catch (error) {
+                    console.error("Error fetching users data:", error);
+                }
+            };
+
+            // Call the function to fetch and display users data
+            fetchUsersData();
+
+
+            // Handle sign-out
+            const signOutButton = document.getElementById('signOutButton');
+            const profileContainer = document.getElementById('profileContainer');
+
+            if (signOutButton && profileContainer) {
+                signOutButton.addEventListener('click', () => {
+                    signOut(auth).then(() => {
+                        console.log('User signed out');
+                        profileContainer.style.display = "none";
+                        userName.textContent = ''; // Clear user info on sign out
+                        userEmail.textContent = '';
+                    }).catch((error) => {
+                        console.error('Error signing out:', error);
+                    });
+                });
+            } else {
+                console.warn('Sign-out button or profile container not found.');
+            }
+
+            // Profile icon toggle
+            const profileIcon = document.getElementById('profileIcon');
+            const profileSection = document.getElementById('profileSection');
+
+            profileIcon.addEventListener('click', () => {
+                console.log('profileIcon clicked ');
+
+                profileSection.style.display = profileSection.style.display === 'block' ? 'none' : 'block';
+            });
+
+            // Click anywhere to close the profile section
+            document.addEventListener('click', (event) => {
+                const isClickInsideProfile = profileSection.contains(event.target) || profileIcon.contains(event.target);
+                if (!isClickInsideProfile) {
+                    profileSection.style.display = 'none'; // Hide the profile section
+                }
+            });
+        })
+    </script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+
+        <!-- Top Bar -->
+        <div class="top_bar">
+            <div class="top_bar_container">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <div class="top_bar_content d-flex flex-row align-items-center justify-content-start">
+                                <ul class="top_bar_contact_list">
+                                    <li>
+                                        <div class="question">Have any questions?</div>
+                                    </li>
+                                    <li>
+                                        <div>Albaiti.ahmed@live.iium.edu.my</div>
+                                    </li>
+                                    <li>
+                                        <div>mazin.muhammed@live.iium.edu.my</div>
+                                    </li>
+                                </ul>
+                                <div class="top_bar_login ml-auto" id="authContainer">
+                                    <ul id="authLinks" style="list-style: none; margin: 0; padding: 0; display: flex;">
+                                        <li style="margin-right: 1px;"><a href="signUp.html"
+                                                style="text-decoration: none; color: #fff;">Register</a></li>
+                                        <li><a href="login.html" style="text-decoration: none; color: #fff;">Login</a>
+                                        </li>
+                                    </ul>
+                                    <div id="profileContainer" style="position: relative; display: inline-block;">
+                                        <i class="fas fa-user-alt" id="profileIcon"
+                                            style="font-size: 24px; color: #fff; cursor: pointer; margin-right: 20px; transition: color 0.3s ease;"></i>
+
+                                        <div id="profileSection" style="display: none; 
+												position: absolute; 
+												right: 0; 
+												top: 35px; 
+												background-color: #fff; 
+												border: 1px solid #ddd; 
+												padding: 20px; 
+												box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); 
+												border-radius: 10px; 
+												z-index: 100; 
+												width: 280px; 
+												transition: all 0.3s ease;">
+                                            <span id="userName"
+                                                style="display: block; color: #0E3D57; margin-bottom: 10px; font-size: 0.9rem;">Name
+                                                :</span>
+                                            <span id="userEmail"
+                                                style="display: block; color: #0E3D57; margin-bottom: 20px; font-size: 0.9rem;">Email
+                                                :</span>
+                                            <button id="signOutButton" class="signOutButton">
+                                                Sign Out
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header Content -->
+        <div class="header_container">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="header_content d-flex flex-row align-items-center justify-content-start">
+                            <div class="logo_container">
+                                <a href="#">
+                                    <div class="logo_content d-flex flex-row align-items-end justify-content-start">
+                                        <div class="logo_img"><img src="images/assets/DataED_logo.jpg" alt=""
+                                                style="width: 80px;"></div>
+                                    </div>
+                                </a>
+                            </div>
+                            <nav class="main_nav_contaner ml-auto">
+                                <ul class="main_nav">
+                                    <li><a href="index.html">home</a></li>
+                                    <li class="active"><a href="users.html">Users</a></li>
+                                    <li><a href="courses.html">lessons</a></li>
+                                    <li><a href="admin.html">Admin Panel</a></li>
+                                </ul>
+                                <!-- <div class="search_button"><i class="fa fa-search" aria-hidden="true"></i></div> -->
+                                <!-- Hamburger -->
+                                <div class="hamburger menu_mm">
+                                    <i class="fa fa-bars menu_mm" aria-hidden="true"></i>
+                                </div>
+                            </nav>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Header Search Panel -->
+        <div class="header_search_container">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="header_search_content d-flex flex-row align-items-center justify-content-end">
+                            <form action="#" class="header_search_form">
+                                <input type="search" class="search_input" placeholder="Search" required="required">
+                                <button
+                                    class="header_search_button d-flex flex-column align-items-center justify-content-center">
+                                    <i class="fa fa-search" aria-hidden="true"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section id="userDataSection" class="userDataSection">
+        <h2>List of Users and their Progress</h2>
+        <table id="userDataTable" border="1">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Progress (Lessons Completed)</th>
+                    <th class="lesson-title-colm">Lesson Title</th>
+                    <th>Quiz Marks</th>
+                </tr>
+            </thead>
+            <tbody id="userDataBody">
+                <!-- User data will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </section>
+
+
+    <!-- Footer-->
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+
+                <!-- About -->
+                <div class="col-lg-3 footer_col">
+                    <div class="footer_about">
+                        <div class="logo_container">
+                            <a href="index.html">
+                                <div class="logo_content d-flex flex-row align-items-end justify-content-start">
+                                    <div class="logo_img"><img src="images/assets/DataED_logo.jpg" alt=""
+                                            style="width: 80px;"></div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="footer_about_text">
+                            <p>Welcome to our website. We are dedicated to providing quality content and exceptional
+                                service to our users. Your feedback is valuable to us as we strive for continuous
+                                improvement.</p>
+                        </div>
+                        <div class="footer_social">
+                            <ul>
+                                <li><a href="https://plus.google.com/" target="_blank" rel="noopener noreferrer"><i
+                                            class="fab fa-google-plus" aria-hidden="true"></i></a></li>
+                                <li><a href="https://www.pinterest.com/" target="_blank" rel="noopener noreferrer"><i
+                                            class="fab fa-pinterest" aria-hidden="true"></i></a></li>
+                                <li><a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"><i
+                                            class="fab fa-facebook" aria-hidden="true"></i></a></li>
+                                <li><a href="https://x.com/" target="_blank" rel="noopener noreferrer"><i
+                                            class="fab fa-twitter" aria-hidden="true"></i></a></li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="col-lg-3 footer_col">
+                    <div class="footer_links">
+                        <div class="footer_title">Quick menu</div>
+                        <ul class="footer_list">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="about.html">About us</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+
+                <div class="col-lg-3 footer_col">
+                    <div class="footer_contact">
+                        <div class="footer_title">Contact Us</div>
+                        <div class="footer_contact_info">
+                            <div class="footer_contact_item">
+                                <div class="footer_contact_title">Address:</div>
+                                <div class="footer_contact_line">Jalan Gombak, 53100 Kuala Lumpur,
+                                    Malaysia</div>
+                            </div>
+                            <div class="footer_contact_item">
+                                <div class="footer_contact_title">Phone:</div>
+                                <div class="footer_contact_line">+966 532666580</div>
+                            </div>
+                            <div class="footer_contact_item">
+                                <div class="footer_contact_title">Email:</div>
+                                <div class="footer_contact_line">Albaiti.ahmed@live.iium.edu.my</div>
+                                <div class="footer_contact_line">mazin.muhammed@live.iium.edu.my</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+
+</html>

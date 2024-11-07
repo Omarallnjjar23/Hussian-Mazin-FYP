@@ -1,0 +1,23 @@
+
+
+lessonText.classList.add('lessonContent');
+lessonText.innerHTML = `
+<div class="card shadow-sm h-100" style="border-radius: 10px;">
+<div class="card-body">
+${lessonData.textContent} <!-- Use lesson content -->
+<!-- Add the video element only if videoUrl is not an empty string -->
+${lessonData.videoUrl && lessonData.videoUrl !== '' ? `
+    <div class="video-container" style="margin-top: 15px;">
+        <iframe width="100%" height="315" 
+            src="https://www.youtube.com/embed/${getYouTubeVideoId(lessonData.videoUrl)}" 
+            title="YouTube video player" frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    </div>
+` : ''}
+        <button class="take-quiz" style="border-radius: 10px;" data-lesson="${lessonId}">
+    Take a quiz
+        </button>
+        </div >
+`;

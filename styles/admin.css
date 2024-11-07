@@ -1,0 +1,203 @@
+/* General styling for the entire admin page */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.admin-content {
+    display: flex;
+    flex-direction: column;
+    margin-top: 200px;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+section {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+    width: 90%;
+    max-width: 700px;
+}
+
+h2 {
+    margin-top: 0;
+    color: #0E3D57;
+    border-bottom: 2px solid #0E3D57;
+    padding-bottom: 5px;
+}
+
+/* Styling the form elements */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin: 10px 0 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+input[type="text"],
+input[type="url"],
+input[type="number"],
+textarea,
+select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 15px;
+    transition: border 0.3s;
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+    border-color: #0E3D57;
+    outline: none;
+}
+
+textarea {
+    resize: vertical;
+}
+
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #0E3D57;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+    outline: none;
+}
+
+button:hover {
+    background-color: #65A9C2;
+    outline: none;
+}
+
+button:focus {
+    outline: none;
+}
+
+/* Table for displaying lessons and quizzes */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table,
+th,
+td {
+    border: 1px solid #ddd;
+}
+
+th,
+td {
+    padding: 10px;
+    text-align: left;
+}
+
+th {
+    background-color: #0E3D57;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* For a responsive design */
+@media (max-width: 768px) {
+    section {
+        width: 100%;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+}
+
+
+/* users page */
+
+.userDataSection {
+    margin-top: 200px;
+    max-width: 1000px;
+    
+}
+
+#userDataTable {
+    width: 1000px;
+    width: 100%;
+    /* Full width for the table */
+    border-collapse: collapse;
+    /* Collapse borders */
+}
+
+#userDataTable th,
+#userDataTable td {
+    border: 1px solid #ccc;
+    /* Border for cells */
+    padding: 15px;
+    /* Padding for cells */
+    text-align: left;
+    /* Align text to the left */
+    vertical-align: top;
+    /* Align content to the top */
+}
+
+#userDataTable th {
+    background-color: #0E3D57;
+    /* Light background for header */
+    font-weight: bold;
+    /* Bold text for header */
+}
+
+#userDataBody div {
+    word-wrap: break-word;
+    /* Wrap long titles */
+    white-space: normal;
+    /* Allow normal text wrapping */
+    margin-bottom: 5px;
+    /* Space between titles */
+}
+
+
+#userDataBody div:last-child {
+    margin-bottom: 0;
+    /* No margin for the last item */
+}
+
+.lesson-title {
+    max-width: 300px;
+    /* Set a max width */
+    overflow: hidden;
+    /* Hide overflow */
+    text-overflow: ellipsis;
+    /* Show ellipsis for overflow */
+    white-space: nowrap;
+    /* Prevent wrapping */
+}

@@ -1,0 +1,829 @@
+{
+    "lessons": [
+        {
+            "lessonTitle": "Introduction to SQL",
+            "questions": [
+                {
+                    "question": "What does SQL stand for?",
+                    "options": [
+                        "Structured Query Language",
+                        "Simple Query Language",
+                        "Standard Query Language",
+                        "Sequential Query Language"
+                    ],
+                    "correctAnswer": "Structured Query Language"
+                },
+                {
+                    "question": "Which SQL statement is used to retrieve data?",
+                    "options": [
+                        "GET",
+                        "SELECT",
+                        "FETCH",
+                        "RETRIEVE"
+                    ],
+                    "correctAnswer": "SELECT"
+                },
+                {
+                    "question": "What is a primary key?",
+                    "options": [
+                        "A unique identifier for a record",
+                        "A type of index",
+                        "A foreign key",
+                        "A field for comments"
+                    ],
+                    "correctAnswer": "A unique identifier for a record"
+                },
+                {
+                    "question": "Which of the following is a DML command?",
+                    "options": [
+                        "CREATE",
+                        "SELECT",
+                        "ALTER",
+                        "DROP"
+                    ],
+                    "correctAnswer": "SELECT"
+                },
+                {
+                    "question": "What is the purpose of a foreign key?",
+                    "options": [
+                        "To create relationships between tables",
+                        "To enforce data integrity",
+                        "To speed up queries",
+                        "Both A and B"
+                    ],
+                    "correctAnswer": "Both A and B"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "Basic SQL Queries",
+            "questions": [
+                {
+                    "question": "What does the WHERE clause do in SQL?",
+                    "options": [
+                        "Filters rows",
+                        "Sorts results",
+                        "Limits columns",
+                        "Joins tables"
+                    ],
+                    "correctAnswer": "Filters rows"
+                },
+                {
+                    "question": "Which SQL keyword is used to return only unique values?",
+                    "options": [
+                        "DISTINCT",
+                        "UNIQUE",
+                        "EXCLUSIVE",
+                        "ONLY"
+                    ],
+                    "correctAnswer": "DISTINCT"
+                },
+                {
+                    "question": "Which operator is used to match a pattern in SQL?",
+                    "options": [
+                        "LIKE",
+                        "MATCH",
+                        "PATTERN",
+                        "FIND"
+                    ],
+                    "correctAnswer": "LIKE"
+                },
+                {
+                    "question": "How do you sort query results in descending order?",
+                    "options": [
+                        "ORDER BY DESC",
+                        "SORT DESC",
+                        "DESCEND",
+                        "ORDER DESC"
+                    ],
+                    "correctAnswer": "ORDER BY DESC"
+                },
+                {
+                    "question": "What does SELECT * FROM table_name do?",
+                    "options": [
+                        "Selects all columns",
+                        "Selects unique columns",
+                        "Selects specific columns",
+                        "Deletes all columns"
+                    ],
+                    "correctAnswer": "Selects all columns"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "Data Manipulation in SQL",
+            "questions": [
+                {
+                    "question": "Which command is used to update data in a table?",
+                    "options": [
+                        "UPDATE",
+                        "ALTER",
+                        "MODIFY",
+                        "CHANGE"
+                    ],
+                    "correctAnswer": "UPDATE"
+                },
+                {
+                    "question": "Which SQL command is used to remove rows from a table?",
+                    "options": [
+                        "DELETE",
+                        "DROP",
+                        "REMOVE",
+                        "TRUNCATE"
+                    ],
+                    "correctAnswer": "DELETE"
+                },
+                {
+                    "question": "How can you add a new row in a table?",
+                    "options": [
+                        "INSERT INTO",
+                        "ADD ROW",
+                        "NEW ROW",
+                        "APPEND"
+                    ],
+                    "correctAnswer": "INSERT INTO"
+                },
+                {
+                    "question": "What does the SET clause do in SQL?",
+                    "options": [
+                        "Specifies column values",
+                        "Selects columns",
+                        "Sets permissions",
+                        "Deletes columns"
+                    ],
+                    "correctAnswer": "Specifies column values"
+                },
+                {
+                    "question": "Which command would you use to delete all records from a table but keep its structure?",
+                    "options": [
+                        "TRUNCATE",
+                        "DELETE",
+                        "DROP",
+                        "REMOVE"
+                    ],
+                    "correctAnswer": "TRUNCATE"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "Working with Joins in SQL",
+            "questions": [
+                {
+                    "question": "Which join returns all records when there is a match in either table?",
+                    "options": [
+                        "FULL OUTER JOIN",
+                        "INNER JOIN",
+                        "LEFT JOIN",
+                        "RIGHT JOIN"
+                    ],
+                    "correctAnswer": "FULL OUTER JOIN"
+                },
+                {
+                    "question": "What type of join returns only matching rows from both tables?",
+                    "options": [
+                        "INNER JOIN",
+                        "OUTER JOIN",
+                        "CROSS JOIN",
+                        "SELF JOIN"
+                    ],
+                    "correctAnswer": "INNER JOIN"
+                },
+                {
+                    "question": "Which join includes all records from the left table and matched records from the right?",
+                    "options": [
+                        "LEFT JOIN",
+                        "RIGHT JOIN",
+                        "FULL JOIN",
+                        "CROSS JOIN"
+                    ],
+                    "correctAnswer": "LEFT JOIN"
+                },
+                {
+                    "question": "Which join includes all records from the right table and matched records from the left?",
+                    "options": [
+                        "RIGHT JOIN",
+                        "LEFT JOIN",
+                        "FULL JOIN",
+                        "INNER JOIN"
+                    ],
+                    "correctAnswer": "RIGHT JOIN"
+                },
+                {
+                    "question": "What does the USING clause do in a SQL join?",
+                    "options": [
+                        "Specifies common columns",
+                        "Limits rows",
+                        "Filters duplicates",
+                        "Sorts results"
+                    ],
+                    "correctAnswer": "Specifies common columns"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "Using Aggregate Functions in SQL",
+            "questions": [
+                {
+                    "question": "Which function calculates the total sum of a column?",
+                    "options": [
+                        "SUM()",
+                        "COUNT()",
+                        "TOTAL()",
+                        "ADD()"
+                    ],
+                    "correctAnswer": "SUM()"
+                },
+                {
+                    "question": "Which function is used to count the number of rows?",
+                    "options": [
+                        "COUNT()",
+                        "SUM()",
+                        "NUMBER()",
+                        "TALLY()"
+                    ],
+                    "correctAnswer": "COUNT()"
+                },
+                {
+                    "question": "What does the AVG() function do?",
+                    "options": [
+                        "Calculates average",
+                        "Calculates sum",
+                        "Counts rows",
+                        "Returns highest value"
+                    ],
+                    "correctAnswer": "Calculates average"
+                },
+                {
+                    "question": "Which function finds the highest value in a column?",
+                    "options": [
+                        "MAX()",
+                        "HIGH()",
+                        "UPPER()",
+                        "SUM()"
+                    ],
+                    "correctAnswer": "MAX()"
+                },
+                {
+                    "question": "Which function finds the lowest value in a column?",
+                    "options": [
+                        "MIN()",
+                        "LOW()",
+                        "BOTTOM()",
+                        "AVG()"
+                    ],
+                    "correctAnswer": "MIN()"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "SQL Constraints and Data Integrity",
+            "questions": [
+                {
+                    "question": "Which constraint ensures that a column cannot have NULL values?",
+                    "options": [
+                        "NOT NULL",
+                        "UNIQUE",
+                        "PRIMARY KEY",
+                        "CHECK"
+                    ],
+                    "correctAnswer": "NOT NULL"
+                },
+                {
+                    "question": "What does the UNIQUE constraint ensure?",
+                    "options": [
+                        "No duplicate values",
+                        "No NULL values",
+                        "Referential integrity",
+                        "Auto increment"
+                    ],
+                    "correctAnswer": "No duplicate values"
+                },
+                {
+                    "question": "Which constraint is used to link two tables together?",
+                    "options": [
+                        "FOREIGN KEY",
+                        "UNIQUE",
+                        "NOT NULL",
+                        "CHECK"
+                    ],
+                    "correctAnswer": "FOREIGN KEY"
+                },
+                {
+                    "question": "What does a PRIMARY KEY constraint do?",
+                    "options": [
+                        "Uniquely identifies each row",
+                        "Prevents NULL values",
+                        "Checks condition",
+                        "Limits row count"
+                    ],
+                    "correctAnswer": "Uniquely identifies each row"
+                },
+                {
+                    "question": "What is the purpose of the CHECK constraint?",
+                    "options": [
+                        "Ensures column value conditions",
+                        "Ensures unique rows",
+                        "Prevents NULL values",
+                        "Creates index"
+                    ],
+                    "correctAnswer": "Ensures column value conditions"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "Creating and Managing Indexes in SQL",
+            "questions": [
+                {
+                    "question": "What is the purpose of an index in a SQL database?",
+                    "options": [
+                        "To speed up queries",
+                        "To join tables",
+                        "To prevent duplicates",
+                        "To enforce constraints"
+                    ],
+                    "correctAnswer": "To speed up queries"
+                },
+                {
+                    "question": "Which command is used to create an index on a table?",
+                    "options": [
+                        "CREATE INDEX",
+                        "ADD INDEX",
+                        "INDEX TABLE",
+                        "MAKE INDEX"
+                    ],
+                    "correctAnswer": "CREATE INDEX"
+                },
+                {
+                    "question": "What is a unique index?",
+                    "options": [
+                        "An index that prevents duplicates",
+                        "An index for primary keys",
+                        "An index on NULL values",
+                        "An index on joins"
+                    ],
+                    "correctAnswer": "An index that prevents duplicates"
+                },
+                {
+                    "question": "How does an index improve query performance?",
+                    "options": [
+                        "By reducing search time",
+                        "By compressing data",
+                        "By joining tables",
+                        "By updating data"
+                    ],
+                    "correctAnswer": "By reducing search time"
+                },
+                {
+                    "question": "What is the impact of too many indexes on a table?",
+                    "options": [
+                        "Slower data modification",
+                        "Faster data deletion",
+                        "Decreased disk usage",
+                        "Enhanced indexing"
+                    ],
+                    "correctAnswer": "Slower data modification" 
+                }
+            ]
+        },
+        {
+            "lessonTitle": "Optimizing SQL Queries for Performance",
+            "questions": [
+                {
+                    "question": "Which clause can be used to limit the number of rows in a result?",
+                    "options": [
+                        "LIMIT",
+                        "WHERE",
+                        "GROUP BY",
+                        "ORDER BY"
+                    ],
+                    "correctAnswer": "LIMIT"
+                },
+                {
+                    "question": "What does EXPLAIN do in SQL?",
+                    "options": [
+                        "Displays query execution plan",
+                        "Optimizes queries",
+                        "Shows results",
+                        "Counts rows"
+                    ],
+                    "correctAnswer": "Displays query execution plan"
+                },
+                {
+                    "question": "How can you improve the performance of a JOIN operation?",
+                    "options": [
+                        "Indexing join columns",
+                        "Using subqueries",
+                        "Removing WHERE clauses",
+                        "Using GROUP BY"
+                    ],
+                    "correctAnswer": "Indexing join columns"
+                },
+                {
+                    "question": "Which type of subquery can be executed independently?",
+                    "options": [
+                        "Independent subquery",
+                        "Correlated subquery",
+                        "Nested subquery",
+                        "Self-join"
+                    ],
+                    "correctAnswer": "Independent subquery"
+                },
+                {
+                    "question": "What does query caching do?",
+                    "options": [
+                        "Stores query results for faster retrieval",
+                        "Deletes old queries",
+                        "Improves JOIN performance",
+                        "Increases data redundancy"
+                    ],
+                    "correctAnswer": "Stores query results for faster retrieval"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "SQL Wildcards",
+            "questions": [
+                {
+                    "question": "Which wildcard pattern would you use to find entries that end with 'son'?",
+                    "options": [
+                        "LIKE 'son%'",
+                        "LIKE '%son'",
+                        "LIKE '_son'",
+                        "LIKE '%s_o_n'"
+                    ],
+                    "correctAnswer": "LIKE '%son'"
+                },
+                {
+                    "question": "If you want to find names that contain exactly five characters, with the first letter being 'J', which wildcard pattern would you use?",
+                    "options": [
+                        "LIKE 'J%____'",
+                        "LIKE 'J____'",
+                        "LIKE 'J_%_____'",
+                        "LIKE '%J____%'"
+                    ],
+                    "correctAnswer": "LIKE 'J____'"
+                },
+                {
+                    "question": "How would you use a wildcard to find all rows where a column value contains the letter 'e' at the second position?",
+                    "options": [
+                        "LIKE 'e%'",
+                        "LIKE '_e%'",
+                        "LIKE '%e%'",
+                        "LIKE 'e_%'"
+                    ],
+                    "correctAnswer": "LIKE '_e%'"
+                },
+                {
+                    "question": "Which wildcard pattern would find entries with a letter in the second position and any characters after that?",
+                    "options": [
+                        "LIKE '_%'",
+                        "LIKE '__%'",
+                        "LIKE '%%'",
+                        "LIKE '%_'"
+                    ],
+                    "correctAnswer": "LIKE '_%'"
+                },
+                {
+                    "question": "If you wanted to find records where the name starts with 'M' and ends with 'n', which pattern would work best?",
+                    "options": [
+                        "LIKE 'M%n'",
+                        "LIKE '%M%n'",
+                        "LIKE '_Mn_'",
+                        "LIKE 'M__n'"
+                    ],
+                    "correctAnswer": "LIKE 'M%n'"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "NULL Functions in SQL",
+            "questions": [
+                {
+                    "question": "Which SQL function is commonly used to replace NULL values with a specified value?",
+                    "options": [
+                        "ISNULL()",
+                        "NULLIF()",
+                        "COALESCE()",
+                        "NVL()"
+                    ],
+                    "correctAnswer": "ISNULL()"
+                },
+                {
+                    "question": "What does the COALESCE() function do when multiple arguments are provided?",
+                    "options": [
+                        "Returns the first non-NULL value among the arguments",
+                        "Checks if all arguments are NULL",
+                        "Returns NULL if any argument is NULL",
+                        "Combines all arguments into one"
+                    ],
+                    "correctAnswer": "Returns the first non-NULL value among the arguments"
+                },
+                {
+                    "question": "Which SQL function can be used to check if two expressions are equal, but returns NULL if they are?",
+                    "options": [
+                        "COALESCE()",
+                        "NULLIF()",
+                        "IFNULL()",
+                        "ISNULL()"
+                    ],
+                    "correctAnswer": "NULLIF()"
+                },
+                {
+                    "question": "If you want to replace NULL values in Oracle SQL, which function would you use?",
+                    "options": [
+                        "IFNULL()",
+                        "COALESCE()",
+                        "NVL()",
+                        "ISNULL()"
+                    ],
+                    "correctAnswer": "NVL()"
+                },
+                {
+                    "question": "How does the COALESCE() function differ from ISNULL() when working with NULL values?",
+                    "options": [
+                        "COALESCE() can take multiple arguments, ISNULL() only two",
+                        "ISNULL() works only with numbers",
+                        "COALESCE() returns NULL if any argument is NULL",
+                        "ISNULL() can handle only text values"
+                    ],
+                    "correctAnswer": "COALESCE() can take multiple arguments, ISNULL() only two"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "UNION in SQL",
+            "questions": [
+                {
+                    "question": "What does the UNION operator do?",
+                    "options": [
+                        "Combines the result sets of two or more SELECT statements",
+                        "Returns the intersection of two SELECT statements",
+                        "Joins two tables",
+                        "Groups rows together"
+                    ],
+                    "correctAnswer": "Combines the result sets of two or more SELECT statements"
+                },
+                {
+                    "question": "Which of the following is true about UNION?",
+                    "options": [
+                        "It eliminates duplicate rows",
+                        "It does not eliminate duplicate rows",
+                        "It requires the same number of columns",
+                        "Both A and C"
+                    ],
+                    "correctAnswer": "Both A and C"
+                },
+                {
+                    "question": "What is the difference between UNION and UNION ALL?",
+                    "options": [
+                        "UNION ALL includes duplicates",
+                        "UNION does not include duplicates",
+                        "They are the same",
+                        "UNION is faster"
+                    ],
+                    "correctAnswer": "UNION ALL includes duplicates"
+                },
+                {
+                    "question": "Which clause is used to sort the final result set of a UNION?",
+                    "options": [
+                        "ORDER BY",
+                        "GROUP BY",
+                        "HAVING",
+                        "WHERE"
+                    ],
+                    "correctAnswer": "ORDER BY"
+                },
+                {
+                    "question": "What happens if the SELECT statements in a UNION have different column names?",
+                    "options": [
+                        "The column names from the first SELECT are used",
+                        "The column names from the second SELECT are used",
+                        "An error occurs",
+                        "They must match exactly"
+                    ],
+                    "correctAnswer": "The column names from the first SELECT are used"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "ANY and ALL in SQL",
+            "questions": [
+                {
+                    "question": "What does the ANY operator do?",
+                    "options": [
+                        "Returns true if any of the subquery values meet the condition",
+                        "Returns true only if all subquery values meet the condition",
+                        "Compares values in two columns",
+                        "Eliminates duplicates"
+                    ],
+                    "correctAnswer": "Returns true if any of the subquery values meet the condition"
+                },
+                {
+                    "question": "What does the ALL operator do?",
+                    "options": [
+                        "Returns true if all of the subquery values meet the condition",
+                        "Returns true if any of the subquery values meet the condition",
+                        "Compares values in two columns",
+                        "Counts NULL values"
+                    ],
+                    "correctAnswer": "Returns true if all of the subquery values meet the condition"
+                },
+                {
+                    "question": "Which operator can be used to compare a value against a list of values?",
+                    "options": [
+                        "ANY",
+                        "ALL",
+                        "IN",
+                        "EXISTS"
+                    ],
+                    "correctAnswer": "ANY"
+                },
+                {
+                    "question": "What is the result of a comparison using ANY if no values meet the condition?",
+                    "options": [
+                        "True",
+                        "False",
+                        "NULL",
+                        "An error occurs"
+                    ],
+                    "correctAnswer": "False"
+                },
+                {
+                    "question": "Which statement is correct about combining ANY and ALL?",
+                    "options": [
+                        "They can be used together in a single query",
+                        "They cannot be used together",
+                        "Only ALL can be used with aggregates",
+                        "Only ANY can be used with aggregates"
+                    ],
+                    "correctAnswer": "They can be used together in a single query"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "CASE in SQL",
+            "questions": [
+                {
+                    "question": "What does the CASE statement do?",
+                    "options": [
+                        "Allows conditional logic in SQL queries",
+                        "Sorts results",
+                        "Filters records",
+                        "Joins tables"
+                    ],
+                    "correctAnswer": "Allows conditional logic in SQL queries"
+                },
+                {
+                    "question": "Which keyword is used to specify the default value in a CASE statement?",
+                    "options": [
+                        "DEFAULT",
+                        "ELSE",
+                        "END",
+                        "THEN"
+                    ],
+                    "correctAnswer": "ELSE"
+                },
+                {
+                    "question": "What is the correct syntax for a simple CASE statement?",
+                    "options": [
+                        "CASE column_name WHEN value1 THEN result1",
+                        "IF column_name = value1 THEN result1",
+                        "SELECT CASE WHEN condition THEN result1",
+                        "CASE WHEN condition THEN result1"
+                    ],
+                    "correctAnswer": "CASE column_name WHEN value1 THEN result1"
+                },
+                {
+                    "question": "Can the CASE statement be used in the SELECT clause?",
+                    "options": [
+                        "Yes",
+                        "No",
+                        "Only in WHERE",
+                        "Only in ORDER BY"
+                    ],
+                    "correctAnswer": "Yes"
+                },
+                {
+                    "question": "What is the result of the CASE statement if no conditions are met?",
+                    "options": [
+                        "NULL",
+                        "An error",
+                        "The first condition",
+                        "The default value specified with ELSE"
+                    ],
+                    "correctAnswer": "The default value specified with ELSE"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "Comments in SQL",
+            "questions": [
+                {
+                    "question": "What symbol is used for single-line comments in SQL?",
+                    "options": [
+                        "--",
+                        "#",
+                        "/*",
+                        "//"
+                    ],
+                    "correctAnswer": "--"
+                },
+                {
+                    "question": "What is the syntax for multi-line comments in SQL?",
+                    "options": [
+                        "/* comment */",
+                        "// comment",
+                        "# comment",
+                        "-- comment"
+                    ],
+                    "correctAnswer": "/* comment */"
+                },
+                {
+                    "question": "Why are comments used in SQL code?",
+                    "options": [
+                        "To explain code",
+                        "To prevent code from executing",
+                        "Both A and B",
+                        "To increase performance"
+                    ],
+                    "correctAnswer": "Both A and B"
+                },
+                {
+                    "question": "Can comments be used to disable SQL statements?",
+                    "options": [
+                        "Yes",
+                        "No",
+                        "Only single-line comments",
+                        "Only multi-line comments"
+                    ],
+                    "correctAnswer": "Yes"
+                },
+                {
+                    "question": "What happens to comments during query execution?",
+                    "options": [
+                        "They are ignored",
+                        "They cause an error",
+                        "They are executed as part of the query",
+                        "They are displayed in results"
+                    ],
+                    "correctAnswer": "They are ignored"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "Operators in SQL",
+            "questions": [
+                {
+                    "question": "Which operator is used for equality in SQL?",
+                    "options": [
+                        "=",
+                        "<>",
+                        ">",
+                        "<"
+                    ],
+                    "correctAnswer": "="
+                },
+                {
+                    "question": "What does the AND operator do?",
+                    "options": [
+                        "Combines two conditions",
+                        "Returns true if either condition is true",
+                        "Negates a condition",
+                        "None of the above"
+                    ],
+                    "correctAnswer": "Combines two conditions"
+                },
+                {
+                    "question": "Which operator is used for logical negation?",
+                    "options": [
+                        "AND",
+                        "OR",
+                        "NOT",
+                        "XOR"
+                    ],
+                    "correctAnswer": "NOT"
+                },
+                {
+                    "question": "What does the OR operator do?",
+                    "options": [
+                        "Returns true if both conditions are true",
+                        "Returns true if at least one condition is true",
+                        "Negates a condition",
+                        "None of the above"
+                    ],
+                    "correctAnswer": "Returns true if at least one condition is true"
+                },
+                {
+                    "question": "Which operator is used for pattern matching in SQL?",
+                    "options": [
+                        "LIKE",
+                        "MATCH",
+                        "REGEXP",
+                        "IN"
+                    ],
+                    "correctAnswer": "LIKE"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise Page</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <link rel="stylesheet" href="./styles/exercise.css">
+</head>
+
+<body>
+    <h1>Exercises</h1>
+
+    <!-- Search Bar -->
+    <input type="text" id="searchBar" class="search-bar" placeholder="Search for SQL lessons...">
+
+    <!-- Lesson Containers -->
+    <div class="lesson-list-container" id="lessonContainer">
+        <ul id="lessonList" class="lesson-list"></ul>
+        <h3 class="no-results" id="noResults" style="display: none;">No lessons found for the current search.</h3>
+
+        <div id="quizContainer" style="display: none;">
+            <h2 id="quizTitle"></h2>
+            <form id="quizForm"></form>
+            <button id="submitQuiz">Submit</button>
+            <div id="quizResults" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { db } from './js/firebaseConfig.js';
+        import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": false,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+        let questionsData;
+
+        // Load the JSON data
+        fetch('./exercise.json')
+            .then(response => response.json())
+            .then(data => {
+                questionsData = data.lessons;
+                console.log('questionsData', questionsData);
+                displayLessons(questionsData);
+            })
+            .catch(error => console.error("Error loading questions JSON:", error));
+
+        function showQuiz(lessonTitle) {
+            const quizContainer = document.getElementById('quizContainer');
+            const quizForm = document.getElementById('quizForm');
+            const quizTitle = document.getElementById('quizTitle');
+
+            // Reset the quiz form and results
+            quizForm.innerHTML = '';
+            document.getElementById('quizResults').style.display = 'none';
+
+            // Find the selected lesson based on the title
+            const selectedLesson = questionsData.find(lesson => lesson.lessonTitle === lessonTitle);
+
+            if (!selectedLesson) {
+                alert("No questions available for this lesson.");
+                return;
+            }
+
+            quizTitle.textContent = `${lessonTitle} Quiz`;
+            selectedLesson.questions.forEach((question, index) => {
+                const questionElement = document.createElement('div');
+                questionElement.className = 'question-block';
+                questionElement.innerHTML = `<p>${index + 1}. ${question.question}</p>`;
+
+                question.options.forEach(option => {
+                    questionElement.innerHTML += `
+                <label>
+                    <input type="radio" name="question${index}" value="${option}">
+                    ${option}
+                </label><br>
+            `;
+                });
+
+                quizForm.appendChild(questionElement);
+            });
+
+            quizContainer.style.display = 'block';
+        }
+
+        // Function to show quiz questions for selected lesson
+        function submitQuiz() {
+            const quizResults = document.getElementById('quizResults');
+            const quizForm = document.getElementById('quizForm');
+            const questions = Array.from(quizForm.querySelectorAll('.question-block'));
+
+            let score = 0;
+            let resultsHTML = "<h3>Results</h3><ul>";
+
+            // Retrieve the lesson title from the quiz title
+            const lessonTitle = document.getElementById('quizTitle').textContent.replace(" Quiz", "");
+
+            // Find the selected lesson based on the title
+            const selectedLesson = questionsData.find(lesson => lesson.lessonTitle === lessonTitle);
+
+            // Check if the selected lesson exists
+            if (!selectedLesson) {
+                console.error(`No lesson found with title: ${lessonTitle}`);
+                toastr.error("Unable to submit quiz: Lesson not found.");
+                return; // Exit the function if the lesson is not found
+            }
+
+            // Loop through the questions and calculate the score
+            questions.forEach((question, index) => {
+                const userAnswer = document.querySelector(`input[name="question${index}"]:checked`);
+                // Use the correct answer from the selected lesson
+                const correctAnswer = selectedLesson.questions[index].correctAnswer;
+
+                if (userAnswer) {
+                    if (userAnswer.value === correctAnswer) {
+                        score++;
+                        resultsHTML += `<li>Question ${index + 1}: Correct</li>`;
+                    } else {
+                        resultsHTML += `<li>Question ${index + 1}: Incorrect (Correct answer: ${correctAnswer})</li>`;
+                    }
+                } else {
+                    resultsHTML += `<li>Question ${index + 1}: No answer selected (Correct answer: ${correctAnswer})</li>`;
+                }
+            });
+
+            resultsHTML += `</ul><p>Your score: ${score} out of ${questions.length}</p>`;
+            quizResults.innerHTML = resultsHTML;
+            quizResults.style.display = 'block';
+
+            // Clear the radio buttons after displaying results
+            questions.forEach((question, index) => {
+                const userAnswer = document.querySelectorAll(`input[name="question${index}"]`);
+                userAnswer.forEach(input => input.checked = false); // Clear the selection
+            });
+
+
+            // Toastr notification
+            toastr.success(`Quiz submitted! Your score: ${score} out of ${questions.length}`);
+        }
+
+        // Function to display lessons in the lesson list
+        function displayLessons(lessons) {
+            const lessonList = document.getElementById('lessonList');
+            lessonList.innerHTML = '';
+
+            lessons.forEach(lesson => {
+                const lessonItem = document.createElement('li');
+                lessonItem.className = 'lesson-item';
+                lessonItem.textContent = lesson.lessonTitle;
+                lessonItem.onclick = () => showQuiz(lesson.lessonTitle);
+                lessonList.appendChild(lessonItem);
+            });
+        }
+
+        // Function to search lessons
+        const searchBar = document.getElementById('searchBar');
+        searchBar.addEventListener('input', () => {
+            const searchText = searchBar.value.toLowerCase().trim();
+            const filteredLessons = questionsData.filter(lesson =>
+                lesson.lessonTitle.toLowerCase().includes(searchText)
+            );
+
+            displayLessons(filteredLessons);
+
+            document.getElementById('noResults').style.display = filteredLessons.length === 0 ? 'block' : 'none';
+            document.getElementById('lessonContainer').style.display = 'block';
+        });
+
+        // Add event listener for submit button
+        document.getElementById('submitQuiz').addEventListener('click', (event) => {
+            event.preventDefault(); // Prevent the default form submission
+            submitQuiz();
+        });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+</body>
+
+</html>

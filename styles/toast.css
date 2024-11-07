@@ -1,0 +1,40 @@
+.toast {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+    max-width: 300px;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    z-index: 1023;
+    color: #fff; /* White text for readability */
+    opacity: 1 !important; /* Ensure full opacity */
+    font-size: 0.9rem;
+}
+
+/* Toast types with solid background colors */
+.toast.toast-success {
+    background-color: #36c257; /* Green for success */
+}
+
+.toast.toast-danger {
+    background-color: #dc3545; /* Red for error */
+}
+
+/* .toast.toast-info {
+    background-color: #3498db; 
+} */
+
+.toast.toast-warning {
+    background-color: #ffc107; /* Yellow for warning */
+}
+
+/* Optional: animation for toast appearance */
+@keyframes slideInRight {
+    0% { transform: translateX(110%); }
+    100% { transform: translateX(0); }
+}
+
+.toast {
+    animation: slideInRight 0.3s ease-out;
+}

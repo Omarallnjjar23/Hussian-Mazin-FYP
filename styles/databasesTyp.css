@@ -1,0 +1,286 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f7f7f7;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+
+#lessonsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+
+.lesson {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 290px;
+    width: 100%;
+    padding: 5px;
+    /* text-align: center; */
+    transition: all 0.3s ease;
+}
+
+.lesson:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px);
+}
+
+.lesson h3 {
+    font-size: 1.25rem;
+    color: #0E3D57;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+.lesson p {
+    font-size: 1rem;
+    color: #777;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.start-lesson,
+.start-course {
+    display: block;
+    width: 100%;
+    padding: 12px 0;
+    font-size: 1rem;
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    font-weight: 500;
+    outline: none;
+    background-color: #0E3D57;
+    color: white;
+    outline: none;
+    border: 2px solid transparent;
+    /* Add a border here */
+}
+
+.start-course {
+    width: 30%;
+    margin-top: 10px;
+}
+
+.start-lesson:hover,
+.start-course:hover,
+.take-quiz:hover {
+    color: #fff !important;
+    background-color: #65A9C2 !important;
+}
+
+.start-lesson[disabled] {
+    background-color: #ddd;
+    color: #999;
+    cursor: not-allowed;
+    border-color: #ddd;
+}
+
+.take-quiz {
+    background-color: #0E3D57;
+    color: white;
+    /* align-self: center; */
+    margin-top: 30px;
+    padding: 10px;
+    width: 25%;
+    cursor: pointer;
+}
+
+.take-quiz:hover {
+    background-color: #65A9C2;
+    color: #fff;
+    border-color: none;
+    
+}
+
+/* .take-quiz[disabled] {
+    background-color: #ddd;
+    color: #999;
+    cursor: not-allowed;
+    border-color: #ddd;
+} */
+
+.take-quiz[disabled]:hover {
+    background-color: #ddd;
+    color: #999;
+    cursor:not-allowed;
+}
+
+#courseOverview {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.video-container {
+    position: relative;
+    /* padding-bottom: 56.25%; */
+    /* 16:9 Aspect Ratio */
+    height: 0;
+   
+    border-radius: 8px;
+    /* Rounded corners */
+    background-color: #000;
+    /* Background color for the video container */
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    /* Remove border */
+    border-radius: 8px;
+    /* Rounded corners */
+}
+
+.quizReview {
+    max-width: 850px;
+    /* margin: 20px auto; */
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+}
+
+.quizQuestionReview {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #eaeaea;
+    border-radius: 5px;
+}
+
+.quizQuestionReview:last-child {
+    margin-bottom: 0;
+}
+
+.question {
+    font-size: 20px;
+    /* Larger font for questions */
+    font-weight: bold;
+    /* Bold for emphasis */
+    color: #2c3e50;
+    /* Darker color for questions */
+    margin-bottom: 10px;
+}
+
+.answer {
+    font-size: 16px;
+    /* Clear and readable size for answers */
+    color: #34495e;
+    /* Dark blue-gray color for answers */
+    margin-left: 20px;
+    /* Indentation for answers */
+    padding: 5px 0;
+    /* Space between each answer */
+}
+
+.correctAnswer {
+    font-size: 16px;
+    font-weight: bold;
+    /* Bold to highlight correct answers */
+    color: #27ae60;
+    /* Green color for correct answers */
+    margin-left: 20px;
+    /* Indentation */
+    padding-top: 5px;
+    /* Space above the correct answer */
+}
+
+.totalMarks {
+    margin-top: 20px;
+    font-size: 22px;
+    /* Slightly larger for total marks */
+    font-weight: bold;
+    /* Bold for emphasis */
+    color: #2c3e50;
+}
+
+.signOutButton,
+.myProgressButton {
+    background: #0E3D57;
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 3px;
+}
+
+.signOutButton:hover,
+.myProgressButton:hover {
+    /* Corrected hover for myProgressButton */
+    background-color: #65A9C2;
+    color: #fff;
+}
+
+.loading-component {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    /* Full viewport height */
+    background-color: #f9f9f9;
+    /* Light background */
+    color: #333;
+    /* Darker text for loading message */
+}
+
+.loader {
+    border: 8px solid #f3f3f3;
+    /* Light gray border */
+    border-top: 8px solid #65A9C2;
+    /* Blue color for the spinner */
+    border-radius: 50%;
+    /* Circular shape */
+    width: 60px;
+    height: 60px;
+    animation: spin 1.5s linear infinite;
+    /* Spinning animation */
+    margin-bottom: 20px;
+    /* Space between spinner and text */
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-component p {
+    font-size: 1.2em;
+    font-family: Arial, sans-serif;
+    /* Clean, modern font */
+    margin-top: 10px;
+    /* Space between the spinner and text */
+    color: #65A9C2;
+    /* Matching color with the spinner */
+}
+
+.BtnQuestionC:hover {
+    color: white;
+    cursor: pointer;
+}
