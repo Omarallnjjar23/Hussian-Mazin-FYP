@@ -23,176 +23,9 @@
     <!-- Toastr JS -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <!-- SQL.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-    <style>
-        .card-body {
-            display: flex;
-            flex-direction: column;
-        }
-        .card-bodyv {
-            display: flex;
-            flex-direction: column;
-            min-width: 700px;
-            min-height: 400px;
-        }
-
-        .lesson {
-            flex: 1 1 calc(33.333% - 20px);
-            /* Each lesson takes up one-third of the width */
-            max-width: 300px;
-            /* Maximum width for each lesson */
-        }
-
-        /* Highlight the current lesson */
-        .current-lesson {
-            background-color: #ffebcc;
-            border: 2px solid #0E3D57;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-        }
-
-        /* Start lesson button styling */
-        .start-lesson {
-            border-radius: 20px;
-            background-color: #0E3D57;
-            color: #fff;
-            padding: 10px 20px;
-            border: none;
-            cursor: pointer;
-        }
-
-        /* Locked lesson button styling */
-        .btn-secondary {
-            border-radius: 20px;
-            padding: 10px 20px;
-        }
-
-        /* Styling for lesson content */
-        .lessonContent {
-            margin-top: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #f8f9fa;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .quizContainer {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            background-color: #f9f9f9;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            margin: 20px auto;
-            font-family: 'Arial', sans-serif;
-        }
-
-        .quizQuestion {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            border: 1px solid #e0e0e0;
-        }
-
-        .quizQuestion p {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .quizQuestion label {
-            display: flex;
-            align-items: center;
-            margin-top: 10px;
-            font-size: 16px;
-            color: #555;
-            cursor: pointer;
-        }
-
-        .quizQuestion input[type="radio"] {
-            margin-right: 10px;
-        }
-
-        .review-quiz {
-            width: 150px;
-            border: none;
-            background-color: rgb(10, 152, 10);
-            color: white;
-            padding: 5px;
-            cursor: pointer;
-        }
-
-        .quizContainer button {
-            padding: 12px 20px;
-            background-color: #0E3D57;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            width: 100%;
-        }
-
-        .quizContainer button:hover {
-            background-color: #65A9C2;
-        }
-
-        .lessonContent {
-            overflow-wrap: break-word;
-            /* Allows long words to be broken and wrapped onto the next line */
-            word-wrap: break-word;
-            /* Ensures long words break to fit within their container */
-            word-break: break-word;
-            /* Breaks words at arbitrary points if they are too long */
-            max-width: 100%;
-            /* Ensures the content does not exceed the parent width */
-            line-height: 1.5;
-            /* Improves readability by adding space between lines */
-        }
-
-        .card {
-            padding: 15px;
-            /* Adds space inside the card */
-            /* margin: 10px; */
-            /* Adds space around the card */
-            border: 1px solid #ddd;
-            width: 100%;
-            /* Adds a border around the card */
-            border-radius: 10px;
-            /* Rounds the corners of the card */
-            background-color: #fff;
-            /* Sets a background color for the card */
-        }
-
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .lesson {
-                flex: 1 1 100%;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .quizContainer {
-                padding: 20px;
-            }
-
-            .quizQuestion {
-                padding: 15px;
-            }
-        }
-
-        #profileIcon:hover {
-            color: #0E3D57;
-        }
-
-        #profileSection {
-            transition: all 0.3s ease;
-        }
-    </style>
-
     <script type="module">
         import { auth, db } from './js/firebaseConfig.js';
         import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js";
@@ -206,6 +39,7 @@
             query,
             orderBy,
         } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
+        import { deleteField } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
 
         toastr.options = {
             "closeButton": true,
@@ -223,7 +57,6 @@
             "showMethod": "fadeIn",
             "hideMethod": "fadeOut"
         };
-
         document.addEventListener('DOMContentLoaded', () => {
 
             // Function to extract the YouTube video ID from the URL
@@ -323,7 +156,13 @@
                     const userProgress = await fetchUserProgress(userId);
                     console.log('userProgress lenght : ', userProgress[0]);
                     startCourseBtn.style.display = 'block';
-                    startCourseBtn.innerText = Object.keys(userProgress).length > 0 ? 'Continue Course' : 'Start Course';
+                    if (Object.keys(userProgress).length === 0) {
+                        startCourseBtn.innerText = 'Start Course';
+                    } else if (Object.keys(userProgress).length >= Object.keys(userProgress).length) {
+                        startCourseBtn.innerText = 'Restart Course';
+                    } else {
+                        startCourseBtn.innerText = 'Continue Course';
+                    }
                     toggleAuthDisplay(user);
                     console.log('current user', user ? user.email : null);
                     // Display lessons based on progress
@@ -342,15 +181,12 @@
                 lessonsContainer.style.marginTop = '220px';
                 document.getElementById('lessonsContainer').style.display = 'flex'; // Show lessons container
             });
-
-           
-
+            /////////////////////////////////////////////////////////////////////////////////
             const displayLessons = async (userId, userProgress) => {
                 window.scrollTo(0, 0);
                 const lessonsContainer = document.getElementById('lessonsContainer');
                 lessonsContainer.innerHTML = ""; // Clear previous content
                 console.log('displayLessons userId', userId);
-
 
                 try {
                     // Fetch current user data from Firestore
@@ -376,9 +212,10 @@
 
                     console.log('lessonDocs', lessons);
 
-                    // Determine the index of the next lesson if not admin
                     let currentLessonIndex = isAdmin ? -1 : lessons.findIndex(lesson => !userProgress[lesson.id]);
                     console.log('currentLessonIndex', currentLessonIndex);
+
+                    let lockRemainingLessons = false; // Flag to lock subsequent lessons for non-admins
 
                     if (lessons.length > 0) {
                         lessons.forEach((lesson, index) => {
@@ -388,24 +225,53 @@
 
                             if (userProgress[lessonId]) {
                                 const marks = userProgress[lessonId].marks || 0;
-                                lessonElement.innerHTML = `
-                        <div class="card shadow-sm h-100" style="border-radius: 10px;">
-                            <div class="card-body">
-                                <h5 class="card-title" style="font-weight: bold; color: #28a745;">
-                                    Lesson Number : ${lessonNumber}<br/>Title : ${title} <br/> (Marks: ${marks}/10)<br/> Status : Completed ✅
-                                </h5>
-                                <button class="review-quiz" style="border-radius: 5px;" data-lesson="${lessonId}">
-                                    Review a quiz 
-                                </button>
+                                if (marks >= 8) {
+                                    // Display Completed Status in Green
+                                    lessonElement.innerHTML = `
+                            <div class="card shadow-sm h-100" style="border-radius: 10px;">
+                                <div class="card-body">
+                                    <h5 class="card-title" style="font-weight: bold; color: #0E3D57;">
+                                        Lesson ${lessonNumber}: ${title} <br/>(Marks: ${marks}/10)<br/> Status:
+                                        <span style="color: #28a745;">Completed ✅</span> 
+                                    </h5>
+                                    <button class="review-quiz" style="border-radius: 5px;" data-lesson="${lessonId}">
+                                        Review Quiz
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    `;
-                                lessonElement.querySelector('.review-quiz').addEventListener('click', () => {
-                                    displayQuizReview(lessonId, userSnapshot.id);
-                                });
-
-                            } else if (index === currentLessonIndex || isAdmin) {
-                                // Current lesson - show an active button with special styling
+                        `;
+                                    lessonElement.querySelector('.review-quiz').addEventListener('click', () => {
+                                        displayQuizReview(lessonId, userSnapshot.id);
+                                    });
+                                } else {
+                                    // Display Not Passed Status in Red and lock subsequent lessons if user is not an admin
+                                    lockRemainingLessons = !isAdmin; // Set lock flag if the user is not an admin
+                                    lessonElement.innerHTML = `
+                            <div class="card shadow-sm h-100" style="border-radius: 10px;">
+                                <div class="card-body">
+                                  <h5 class="card-title" style="font-weight: bold; color: #0E3D57;"> 
+                                    Lesson ${lessonNumber}: ${title} <br/> (Marks: ${marks}/10)<br/> 
+                                    Status: <span style="color: red;">Not Passed ❌</span>
+                                </h5>
+                                    <button class="review-quiz" style="border-radius: 5px;" data-lesson="${lessonId}">
+                                        Review Quiz
+                                    </button>
+                                    <button class="retake-quiz" style="border-radius: 5px; margin-top:10px" data-lesson="${lessonId}">
+                                        Retake Quiz
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                                    lessonElement.querySelector('.review-quiz').addEventListener('click', () => {
+                                        displayQuizReview(lessonId, userSnapshot.id);
+                                    });
+                                    lessonElement.querySelector('.retake-quiz').addEventListener('click', () => {
+                                        console.log('what is goiing on!');
+                                        displayRetakeQuiz(lessonId, userSnapshot.id);
+                                    });
+                                }
+                            } else if ((index === currentLessonIndex || isAdmin) && !lockRemainingLessons) {
+                                // Current lesson or admin access - show Start Lesson button if lessons aren't locked
                                 lessonElement.innerHTML = `
                         <div class="card shadow-sm h-100" style="border-radius: 10px;">
                             <div class="card-body">
@@ -421,7 +287,7 @@
                                 handleLessonProgress(userSnapshot.id, lessonElement, lessonId);
 
                             } else {
-                                // Future lesson - disabled button
+                                // Locked future lesson for non-admins or due to "Not Passed" status
                                 lessonElement.innerHTML = `
                         <div class="card shadow-sm h-100" style="border-radius: 10px;">
                             <div class="card-body">
@@ -445,7 +311,6 @@
                 }
             };
 
-
             // Function to handle lesson progress
             const handleLessonProgress = async (userId, lessonElement, lessonId) => {
                 const lessonsContainer = document.getElementById('lessonsContainer');
@@ -456,8 +321,6 @@
                 startLessonButton.addEventListener('click', async () => {
 
                     startLessonButton.disabled = true;
-                    // const lessonsContainer = document.getElementById('lessonsContainer');
-                    // lessonElement.style.display = "none";
                     lessonsContainer.style.display = "flex";
                     console.log(' start lesson cliked');
 
@@ -472,28 +335,28 @@
                             const lessonContent = lessonData.textContent || "<p>No content available for this lesson.</p>";
                             const videoUrl = lessonData.videoUrl && lessonData.videoUrl !== ''
                                 ? `<div class="video-container" style="position: relative; padding-top: 56.25%; margin-top: 15px;">
-                            <iframe 
-                            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
-                                src="https://www.youtube.com/embed/${getYouTubeVideoId(lessonData.videoUrl)}"
-                                title="YouTube video player" frameborder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowfullscreen>
-                            </iframe>
-                        </div>`
+                                    <iframe 
+                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
+                                        src="https://www.youtube.com/embed/${getYouTubeVideoId(lessonData.videoUrl)}"
+                                        title="YouTube video player" frameborder="0"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowfullscreen>
+                                    </iframe>
+                                </div>`
                                 : "<p style='text-align: center; color: grey;'>Video not available for this lesson.</p>";
 
                             lessonText.classList.add('lessonContent');
                             lessonText.innerHTML = `
-                    <div class="card shadow-sm h-100" style="border-radius: 10px;">
-                        <div class="card-bodyv">
-                            ${lessonContent} <!-- Use lesson content or placeholder message -->
-                            ${videoUrl} <!-- Use video element or placeholder message -->
-                            <button class="take-quiz" style="border-radius: 10px; margin-top: 15px;" data-lesson="${lessonId}">
-                                Take a quiz
-                            </button>
-                        </div>
-                    </div>
-                `;
+                                <div class="card shadow-sm h-100" style="border-radius: 10px;">
+                                    <div class="card-bodyv">
+                                        ${lessonContent} <!-- Use lesson content or placeholder message -->
+                                        ${videoUrl} <!-- Use video element or placeholder message -->
+                                        <button class="take-quiz" style="border-radius: 10px; margin-top: 15px;" data-lesson="${lessonId}">
+                                            Take a quiz
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
 
                             lessonsContainer.appendChild(lessonText);
                             setTimeout(() => {
@@ -552,37 +415,115 @@
 
                 });
             };
+            ///////////////////////////////////////////////////////////////////////////
+            const displayRetakeQuiz = async (lessonId, id) => {
+
+                try {
+                    const userProgress = await fetchUserProgress(id);
+                    console.log('retakeQuiz clicked');
+                    const quizQuestions = [];
+                    const quizRef = collection(db, `Courses/SQL/lessons/${lessonId}/quiz/quizDoc/questions`);
+                    const querySnapshot = await getDocs(quizRef);
+                    querySnapshot.forEach((doc) => {
+                        quizQuestions.push({ id: doc.id, ...doc.data() });
+                    });
+
+                    // Check if the quiz form already exists
+                    if (!document.getElementById('quizForm')) {
+                        // Display quiz form only if it doesn't already exist
+                        displayQuiz(quizQuestions, id, lessonId, userProgress);
+                    } else {
+                        console.log("Quiz form already displayed.");
+                    }
+
+                } catch (error) {
+                    console.error("Error fetching quiz questions: ", error);
+                    toastr.error("Error fetching quiz questions");
+                }
+                console.log('lessonId', lessonId);
+                console.log('id', id);
+            }
+            function validateCodeAnswer(userSQL, solutionSQL) {
+                // Trim and normalize the SQL strings to ensure minor differences like whitespace don't cause mismatches
+                const normalizeSQL = (sql) => sql.replace(/\s+/g, ' ').trim().toLowerCase();
+
+                // console.log('--- validateCodeAnswer Debugging ---');
+                // console.log('User SQL:', userSQL);
+                // console.log('Solution SQL:', solutionSQL);
+
+                const normalizedUserSQL = normalizeSQL(userSQL);
+                const normalizedSolutionSQL = normalizeSQL(solutionSQL);
+
+                // console.log('Normalized User SQL:', normalizedUserSQL);
+                // console.log('Normalized Solution SQL:', normalizedSolutionSQL);
+
+                // Compare the normalized SQL strings
+                const isCorrect = normalizedUserSQL === normalizedSolutionSQL;
+
+                // console.log('Validation Result:', isCorrect);
+                return isCorrect;
+            }
+
+            // Function to reset (delete) the quiz data for retake
+            const resetQuiz = async (userId, lessonId) => {
+                try {
+                    const userRef = doc(db, 'users', userId);
+                    const userSnapshot = await getDoc(userRef);
+                    if (!userSnapshot.exists()) {
+                        console.error('User not found');
+                        return;
+                    }
+
+                    console.log('resetQuiz');
+
+                    // Reference to the specific quiz data under the user's 'quizzes' field
+                    await updateDoc(userRef, {
+                        [`quizzes.${lessonId}`]: deleteField() // Deletes the lesson's quiz data
+                    });
+                    console.log(`Quiz data for lesson ${lessonId} reset successfully.`);
+                } catch (error) {
+                    console.error("Error resetting quiz data:", error);
+                }
+            };
 
             // Function to display quiz questions (you can customize this for your UI)
-            const displayQuiz = (quizQuestions, userId, lessonId, userProgress) => {
+            const displayQuiz = async (quizQuestions, userId, lessonId, userProgress) => {
                 const quizContainer = document.createElement('form');
                 quizContainer.classList.add('quizContainer');
                 quizContainer.id = 'quizForm';
+
                 // Loop through each question
                 quizQuestions.forEach((question, index) => {
                     const questionElement = document.createElement('div');
                     questionElement.classList.add('quizQuestion');
-
-                    // Loop through the answers object (instead of array) to display answer options
-                    const answerOptions = Object.keys(question.answers).map((key) => {
-                        const answer = question.answers[key];
-                        return `
-                <label>
-                    <input type="radio" name="question${index}" value="${key}">
-                    ${answer.answer}
-                </label>
-            `;
-                    }).join('');
-
+                    let answerOptions = '';
+                    // Check if the question is of type "code"
+                    if (question.solutionSQL) {
+                        // Display a textarea for SQL code input
+                        answerOptions = `
+                            <label for="codeAnswer${index}">Write your SQL query:</label><br/>
+                            <textarea id="codeAnswer${index}" name="codeAnswer${index}" rows="5" cols="60"></textarea>
+                        `;
+                    } else {
+                        // Loop through the answers object (instead of array) to display answer options
+                        answerOptions = Object.keys(question.answers).map((key) => {
+                            const answer = question.answers[key];
+                            return `
+                            <label>
+                                <input type="radio" name="question${index}" value="${key}">
+                                ${answer.answer}
+                            </label>
+                        `;
+                        }).join('');
+                    }
                     // Set up the question and answer options
                     questionElement.innerHTML = `
-            <p>${index + 1}. ${question.questionText}</p>
-            ${answerOptions}
-        `;
+                        <p>${index + 1}. ${question.questionText}</p>
+                        ${answerOptions}
+                        `;
                     quizContainer.appendChild(questionElement);
                 });
 
-                // Add a submit button
                 quizContainer.innerHTML += `<button type="submit">Submit Quiz</button> `;
 
                 // Append quiz form to the container
@@ -602,8 +543,13 @@
                     e.preventDefault(); // Prevent default form submission
 
                     const userAnswers = quizQuestions.map((question, index) => {
-                        const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
-                        return selectedOption ? selectedOption.value : null; // Store the selected answer key (like "a1", "a2")
+                        if (question.solutionSQL) {
+                            const codeAnswer = document.querySelector(`#codeAnswer${index}`).value;
+                            return codeAnswer ? codeAnswer.trim() : null;
+                        } else {
+                            const selectedOption = document.querySelector(`input[name="question${index}"]:checked`);
+                            return selectedOption ? selectedOption.value : null; // Store the selected answer key (like "a1", "a2")
+                        }
                     });
                     console.log('userAnswers', userAnswers);
 
@@ -616,15 +562,26 @@
 
                     toastr.success('Quiz Submitted Successfully');
                     // Compare user's answers with correct answers and store the result
-                    const result = quizQuestions.map((question, index) => {
-                        const userAnswerKey = userAnswers[index];
-                        const isCorrect = userAnswerKey !== null && question.answers[userAnswerKey].isCorrect;
-                        return {
-                            questionId: question.id,
-                            userAnswer: userAnswerKey,
-                            isCorrect
-                        };
-                    });
+                    // Check answers for each question type
+                    const result = await Promise.all(
+                        quizQuestions.map(async (question, index) => {
+                            const userAnswer = userAnswers[index];
+
+                            let isCorrect = false;
+
+                            if (question.solutionSQL) {
+                                isCorrect = validateCodeAnswer(userAnswer, question.solutionSQL);
+                            } else {
+                                isCorrect = userAnswer !== null && question.answers[userAnswer].isCorrect;
+                            }
+
+                            return {
+                                questionId: question.id,
+                                userAnswer,
+                                isCorrect,
+                            };
+                        })
+                    );
 
                     console.log('result', result);
                     // Save the user's progress and results in Firestore (your Firestore function should handle the storage)
@@ -635,9 +592,7 @@
             };
             // Firestore save function
             const saveQuizResult = async (userId, lessonId, result) => {
-                console.log('userId:', userId);
-                console.log('lessonId:', lessonId);
-                console.log('result:', result);
+                console.log(' saveQuizResult result', result);
 
                 try {
                     const userProgressRef = doc(db, `users/${userId}`); // Reference to the user document
@@ -649,6 +604,7 @@
                             }
                         }
                     }, { merge: true }); // Merge to avoid overwriting other fields in the user document
+                    console.log('Quiz result saved successfully');
                 } catch (error) {
                     console.error('Error saving quiz result:', error);
                 }
@@ -659,6 +615,8 @@
                 // Fetch user's answers and quiz questions
                 const userAnswers = await fetchUserAnswers(userId, lessonId);
                 const quizQuestions = await fetchQuizQuestions(lessonId);
+                console.log('userAnswers', userAnswers);
+                console.log('quizQuestions', quizQuestions);
 
                 const reviewContainer = document.createElement('div');
                 reviewContainer.classList.add('quizReview');
@@ -667,56 +625,85 @@
 
                 // Loop through each question
                 quizQuestions.forEach((question, index) => {
-                    const userAnswerIndex = userAnswers[index]?.userAnswer; // User's chosen answer index
-                    const isCorrect = userAnswers[index]?.isCorrect; // Whether user's answer is correct
-
-                    console.log(`Question ${index + 1}:`);
-                    console.log(`User Answer Index: ${userAnswerIndex}`);
-                    console.log(`Is Correct: ${isCorrect}`);
+                    const userAnswerIndex = userAnswers[index]?.userAnswer;
+                    const isCorrect = userAnswers[index]?.isCorrect;
 
                     const reviewElement = document.createElement('div');
                     reviewElement.classList.add('quizQuestionReview');
+                    reviewElement.innerHTML = `<p><strong>${index + 1}. ${question?.questionText}</strong></p>`;
+                    let isCorrectAnswer = false;
 
-                    reviewElement.innerHTML = `<p><strong>${index + 1}. ${question.questionText}</strong></p>`;
+                    if (question?.solutionSQL) {
+                        // Check if the user's answer matches the correct solution SQL
+                        isCorrectAnswer = userAnswerIndex === question.solutionSQL;
+                        // Display the user's SQL answer
+                        reviewElement.innerHTML += `<pre style="color: ${isCorrectAnswer ? 'green' : 'red'};">${userAnswerIndex}</pre>`;
 
-                    question.answers.forEach((answer, idx) => {
-                        let answerColor = 'black'; // Default color for all answers
+                        if (isCorrectAnswer) {
+                            // Include expected output only if it exists
+                            if (question?.expectedOutput) {
+                                reviewElement.innerHTML += `
+                        <p><strong>Expected Output:</strong></p>
+                        <pre>${JSON.stringify(question.expectedOutput)}</pre>
+                      `;
+                            }
 
-                        // Check if this is the user's selected answer
-                        if (idx === parseInt(userAnswerIndex)) {
-                            // If the answer is correct, color it green; if incorrect, color it red
-                            answerColor = isCorrect ? 'green' : 'red';
+                        } else {
+                            // If the answer is incorrect
+                            reviewElement.innerHTML += `
+                        <p style="color: green;">Correct Answer:</p>
+                        <pre style="color: green;">${question.solutionSQL}</pre>
+                      `;
+
+                            // Include expected output only if it exists
+                            if (question?.expectedOutput) {
+                                reviewElement.innerHTML += `
+                        <p><strong>Expected Output:</strong></p>
+                        <pre>${JSON.stringify(question.expectedOutput)}</pre>
+                     `;
+                            }
                         }
+                    }
+                    if (question?.answers) {
+                        question.answers.forEach((answer, idx) => {
+                            let answerColor = 'black';
 
+                            if (idx === parseInt(userAnswerIndex)) {
+                                answerColor = isCorrect ? 'green' : 'red';
+                            }
 
-                        console.log(`Answer ${idx}: ${answer.answer}, Color: ${answerColor}`);
+                            reviewElement.innerHTML += `
+                            <p style="color: ${answerColor};">
+                                ${answer.answer}
+                            </p>
+                              `;
+                        });
+                    }
 
-                        // Display the answer option with the right color
-                        reviewElement.innerHTML += `
-                <p style="color: ${answerColor};">
-                    ${answer.answer}
-                </p>
-            `;
-                    });
-
-                    // If the user's answer is incorrect, show the correct answer too
-                    if (!isCorrect) {
+                    if (!isCorrect && question?.answers) {
+                        // Find and display the correct answer only for non-code questions
                         const correctAnswer = question.answers.find(answer => answer.isCorrect);
-                        reviewElement.innerHTML += `
+                        if (correctAnswer) {
+                            reviewElement.innerHTML += `
                 <p style="color: green;">
                     Correct Answer: ${correctAnswer.answer}
                 </p>
-            `;
+                  `;
+                        }
                     }
 
-                    if (isCorrect) {
+                    // if (isCorrect) {
+                    //     totalMarks++;
+                    // }
+                    if (isCorrect || isCorrectAnswer) {
                         totalMarks++;
                     }
 
+                    console.log('final totalMarks', totalMarks);
                     reviewContainer.appendChild(reviewElement);
                 });
 
-                // Create a wrapper for total marks and Go Back button
+                // Total Marks and Go Back Button
                 const resultsWrapper = document.createElement('div');
                 resultsWrapper.style.display = 'flex';
                 resultsWrapper.style.justifyContent = 'space-between';
@@ -725,65 +712,58 @@
                 const totalMarksElement = document.createElement('p');
                 totalMarksElement.innerHTML = `<strong>Total Marks: ${totalMarks} / ${quizQuestions.length}</strong>`;
 
-                // Go Back Button
-
-                const btnStyle = {
-                    background: '#0E3D57',
-                    color: '#fff',
-                    padding: '8px 15px',
-                    border: 'none',
-                    borderRadius: '5px', // Fixing the typo from CSS
-                    cursor: 'pointer',
-                    transition: 'background 0.3s ease',
-                    display: 'block',
-                    width: '30%',
-                    textAlign: 'center', // Fixing the typo from CSS
-                    marginBottom: '3px',
-                    marginLeft: 'auto'
-                };
-
-                // For the hover effect, you'll handle this separately in JavaScript
-                const btnHoverStyle = {
-                    backgroundColor: '#65A9C2',
-                    color: '#fff',
-                };
-
                 const goBackButton = document.createElement('button');
                 goBackButton.textContent = 'Go Back';
-                for (const property in btnStyle) {
-                    goBackButton.style[property] = btnStyle[property];
-                }
-
-                // Add event listeners for hover effect
-                goBackButton.addEventListener('mouseover', () => {
-                    for (const property in btnHoverStyle) {
-                        goBackButton.style[property] = btnHoverStyle[property];
-                    }
-                });
-
-                goBackButton.addEventListener('mouseout', () => {
-                    for (const property in btnStyle) {
-                        goBackButton.style[property] = btnStyle[property];
-                    }
-                });
-
+                goBackButton.style.cssText = 'background: #0E3D57; color: #fff; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; width: 30%; text-align: center; margin-bottom: 3px; margin-left: auto;';
                 goBackButton.addEventListener('click', async () => {
-                    // Go back logic (e.g., navigate to lesson page or previous quiz page)
-                    console.log('Go back button clicked');
-                    // You can use window.history.back() or any navigation function to go back
                     const userProgress = await fetchUserProgress(userId);
                     displayLessons(userId, userProgress);
-                    // window.history.back();
                 });
-
                 resultsWrapper.appendChild(totalMarksElement);
                 resultsWrapper.appendChild(goBackButton);
-
+                // resultsWrapper.appendChild(retakeButton);
                 reviewContainer.appendChild(resultsWrapper);
 
                 document.getElementById('lessonsContainer').innerHTML = '';
                 document.getElementById('lessonsContainer').appendChild(reviewContainer);
             };
+
+            const submitQuiz = async (userId, lessonId, userAnswers) => {
+                try {
+                    // First, reset any previous quiz data for a clean retake
+                    await resetQuiz(userId, lessonId);
+
+                    // Calculate total marks based on correct answers
+                    const totalMarks = userAnswers.filter(answer => answer.isCorrect).length;
+
+                    // Update Firestore with new answers and marks
+                    await saveQuizResult(userId, lessonId, userAnswers);
+
+                    console.log("Quiz submitted successfully with new data.");
+
+                } catch (error) {
+                    console.error("Error submitting quiz:", error);
+                }
+            };
+
+            const restartCourse = async (userId) => {
+                try {
+                    await userDocRef.update({
+                        quizzes: FieldValue.delete() // Directly delete the 'quizzes' field
+                    });
+                    console.log('Quizzes object successfully deleted for user:', userId);
+                } catch (error) {
+                    console.error('Error deleting quizzes object:', error);
+                }
+            }
+
+            // Add event listener to call a function based on the button state
+            // Add event listener only if the button text is "Restart Course"
+            if (startCourseBtn.innerText === 'Restart Course') {
+                startCourseBtn.addEventListener('click', () => {
+                    restartCourse(userId); // Call function to restart the course
+                });
+            }
 
             // Function to fetch user answers from Firestore
             const fetchUserAnswers = async (userId, lessonId) => {
@@ -799,10 +779,8 @@
                         return lessonQuiz.quizResult; // Return the quiz result for this lesson
                     }
                 }
-
                 return []; // Return an empty array if no quiz data exists for the lesson
             };
-
 
             // Function to fetch quiz questions from Firestore
             const fetchQuizQuestions = async (lessonId) => {
@@ -811,8 +789,6 @@
 
                 return questionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             };
-
-
         });
 
         // Function to fetch the user's progress from Firestore
@@ -834,10 +810,7 @@
                 console.error("Error fetching user progress:", error);
                 return {};
             }
-
-
         };
-
         // Click anywhere to close the profile section
         document.addEventListener('click', (event) => {
             const isClickInsideProfile = profileSection.contains(event.target) || profileIcon.contains(event.target);
@@ -845,14 +818,11 @@
                 profileSection.style.display = 'none'; // Hide the profile section
             }
         });
-
     </script>
-
 </head>
 
 <body>
     <header class="header">
-
         <!-- Top Bar -->
         <div class="top_bar">
             <div class="top_bar_container">

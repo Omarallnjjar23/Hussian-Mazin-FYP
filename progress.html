@@ -40,7 +40,7 @@
                 window.location.href = 'contact.html';
             })
 
-            let totalLessons = 8; // Each course has 6 lessons
+            let totalLessons = 16; // Each course has 6 lessons
 
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
@@ -74,17 +74,17 @@
                 }
             });
 
-            // Function to retrieve user's quiz progress and fetch lesson titles
             // Function to retrieve user's quiz progress and fetch SQL lesson titles
             async function getProgress(userId) {
                 const userRef = doc(db, 'users', userId);
                 const userSnap = await getDoc(userRef);
+                let totalMarks = 0;
 
                 let completedLessons = 0; // Track the completed lessons to calculate percentage
 
                 if (userSnap.exists()) {
                     const quizzes = userSnap.data().quizzes;
-                    console.log('Quizzes:', quizzes);
+                    // console.log('Quizzes:', quizzes);
 
                     for (const lessonId in quizzes) {
                         const lessonSQLRef = doc(db, 'Courses', 'SQL', 'lessons', lessonId);
@@ -98,20 +98,33 @@
                             // Increment completed lessons if quiz is marked as completed
                             completedLessons++;
 
+                            // Add quiz marks to calculate the average
+                            totalMarks += quizData.marks;
+
                             // Display progress info in tables
                             displayProgress(lessonData.title, quizData);
                         }
                     }
-
                     // Update progress bar
                     console.log('completedLessons', completedLessons);
 
                     console.log('totalLessons', totalLessons);
+                    console.log('quizzes', quizzes);
 
                     const completionPercentage = (completedLessons / totalLessons) * 100;
                     const formattedPercentage = completionPercentage.toFixed(1);
                     progressBar.style.width = `${formattedPercentage}%`;
                     progressText.textContent = `${formattedPercentage}% of SQL Course Lessons Completed`;
+
+                    // Check if user has completed all lessons
+                    if (completedLessons === totalLessons) {
+                        congratulatoryMessage.style.display = 'block'; // Show congrats message
+                        progressOverview.style.display = 'none';
+                        // YourProgress.style.display = 'none';
+                        const averageMarks = (totalMarks / totalLessons).toFixed(2);
+                        averageMarksMessage.textContent = `Average Marks: ${averageMarks}/10`;
+                        averageMarksMessage.style.display = 'block'; // Show average marks
+                    }
                 }
             }
 
@@ -157,7 +170,6 @@
             });
         });
     </script>
-
 </head>
 
 <body>
@@ -283,15 +295,29 @@
         </header>
 
         <div class="container">
-            <header class="header1" style="color: #fff;">
+
+            <header class="header1" style="color: #fff;" id ='YourProgress'>
                 <h1>Your Progress</h1>
                 <div class="user-profile">
                     <span class="username" id="username"></span>
                 </div>
             </header>
 
+            <!-- Congratulatory message -->
+            <div style="display: flex; flex-direction: column; align-items: center; padding: 10px; margin-top: 10px;">
+                <div id="congratulatoryMessage" style="display:none;">
+                    <h3>🎉🎓 Congratulations! You've completed the course! 🎉🏆</h3>
+                </div>
+
+                <!-- Average marks message -->
+                <div id="averageMarksMessage" style="display:none;">
+                    <h4>Average Marks: </h4>
+                </div>
+            </div>
+
+
             <!-- Progress Section -->
-            <section class="progress-overview">
+            <section id='progressOverview' class="progress-overview">
                 <h3>Lessons Progress</h3>
                 <div class="progress-bar-container">
                     <div class="progress-bar" id="progress-bar"></div>
@@ -299,14 +325,13 @@
                 <p id="progress-text" class="progress-text">0% Of Courses's Lessons Completed</p>
             </section>
 
-
             <!-- SQL Lessons Table -->
             <section class="quiz-results">
                 <h3>SQL Lessons</h3>
                 <table>
                     <thead>
                         <tr>
-                            <th>Lesson</th>
+                            <th>Lesson Title</th>
                             <th>Quiz Score</th>
                         </tr>
                     </thead>

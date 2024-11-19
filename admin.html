@@ -69,10 +69,10 @@
                     const userData = userDoc.data();
 
                     if (userData && userData.role === "admin") {
-                        toastr.success("Welcome, Admin!", "success");
+                        console.log("Welcome, Admin!", "success");
                     } else {
                         toastr.warning("Access Denied: Admins only", "warning"); // Show a warning toast
-                        setTimeout(() => { window.location.href = 'index.html'; }, 3000); // Adjust delay to allow user to read the toast message
+                        setTimeout(() => { window.location.href = 'index.html'; }, 1000); // Adjust delay to allow user to read the toast message
                     }
                 } else {
                     window.location.href = 'login.html';
