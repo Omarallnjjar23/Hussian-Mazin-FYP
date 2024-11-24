@@ -18,6 +18,12 @@ body {
 }
 
 
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    /* min-height: 100vh; */
+}
+
 .lesson {
     background-color: white;
     border-radius: 10px;
@@ -391,6 +397,46 @@ body {
     cursor: pointer;
 }
 
+.view-lesson {
+    width: 150px;
+    border: none;
+    background-color: #65A9C2;
+    color: white;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.view-lesson:hover {
+    background-color: #0E3D57;
+    color: white;
+    cursor: pointer;
+}
+
+.view-lesson[disabled] {
+    background-color: #ddd;
+    color: #999;
+    cursor: not-allowed;
+    border-color: #ddd;
+}
+
+.close-modal {
+    width: 750px;
+    align-self: center;
+    border: none;
+    background-color: #0E3D57;
+    color: white;
+    padding: 11px;
+    margin-top: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.close-modal:hover {
+    background-color: #65A9C2;
+    color: white;
+    cursor: pointer;
+}
+
 .retake-quiz {
     width: 150px;
     border: none;
@@ -449,6 +495,16 @@ body {
     /* Sets a background color for the card */
 }
 
+.sql-content {
+    flex-grow: 1;
+    /* This allows the content to take up the remaining space */
+}
+
+.footer {
+    margin-top: auto;
+    /* Push the footer to the bottom */
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .lesson {
@@ -472,4 +528,127 @@ body {
 
 #profileSection {
     transition: all 0.3s ease;
+}
+
+
+/* Modal background overlay */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    /* Darker overlay background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Modal content box */
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    /* Increased border radius for a smoother design */
+    text-align: center;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    /* Slightly heavier shadow */
+    width: 400px;
+    /* Set a fixed width for the modal */
+    position: relative;
+    /* For positioning the close button */
+}
+
+/* Title styling */
+.modal-content h2 {
+    color: #0E3D57;
+    margin-bottom: 20px;
+    /* Adds space between title and text */
+}
+
+/* Styling for modal text */
+.modal-content p {
+    font-size: 16px;
+    margin-bottom: 20px;
+    /* Adds space between text and buttons */
+}
+
+/* Action buttons (colored as per request) */
+.btn-modal {
+    background-color: #0E3D57;
+    /* Primary color */
+    color: white;
+    padding: 12px 24px;
+    /* Slightly larger padding */
+    border: none;
+    border-radius: 8px;
+    /* Rounded corners */
+    margin-right: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    /* Smooth hover effect */
+}
+
+.btn-modal:hover {
+    background-color: #65A9C2;
+    /* Hover effect */
+}
+
+/* Close button styling (X button) */
+.btn-close {
+    background-color: transparent;
+    color: #0E3D57;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.btn-close:hover {
+    color: #65A9C2;
+    /* Hover effect for close button */
+}
+
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    width: 300px;
+}
+
+.progress-bar-container {
+    margin-top: 15px;
+    height: 10px;
+    width: 100%;
+    background-color: #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 100%;
+    background-color: #65A9C2;
+    transition: width 10s linear;
 }

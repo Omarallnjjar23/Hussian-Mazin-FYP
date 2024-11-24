@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="styles/responsive.css">
     <link rel="stylesheet" href="./styles/progress.css">
+    <!-- pdf.js Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script type="module">
         import { auth, db } from './js/firebaseConfig.js';
@@ -27,24 +29,35 @@
             doc,
             getDoc,
         } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
+        import { generateCertificate } from './js/certificateGenerator.js';
 
         document.addEventListener('DOMContentLoaded', function () {
-            const userName = document.getElementById('username');
+
+            const userNameElements = document.querySelectorAll('.username');
             const noSqlTableBody = document.getElementById('nosql-tbody');
             const sqlTableBody = document.getElementById('sql-tbody');
             const progressBar = document.getElementById('progress-bar');
             const progressText = document.getElementById('progress-text');
             const hQuestion = document.getElementById('BtnQuestion');
+            const currentUser = auth.currentUser;
 
             hQuestion.addEventListener('click', function () {
                 window.location.href = 'contact.html';
             })
 
+            const generateCertificateButton = document.getElementById('generateCertificateButton');
+
+
+            function capitalizeFirstLetter(str) {
+                if (!str) return ''; // Handle empty or undefined strings
+                return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+            }
+
             let totalLessons = 16; // Each course has 6 lessons
 
             onAuthStateChanged(auth, async (user) => {
                 if (user) {
-
+                    // await displayUserInfo(user.uid);
                     // Hide login/register links
                     authLinks.style.display = 'none';
                     // Show profile section
@@ -53,12 +66,16 @@
                     userEmail.textContent = user.email;
                     console.log('User signed in:', user);
                     const usersRef = doc(db, 'users', user.uid);
+
                     try {
                         const userDoc = await getDoc(usersRef)
                         if (userDoc.exists()) {
                             const userInfo = userDoc.data();
                             console.log('User info:', userInfo);
-                            userName.textContent = userInfo.name;
+                            userNameElements.forEach(element => {
+                                element.textContent = capitalizeFirstLetter(userInfo.name) || 'Anonymous';
+                            });
+                            // toggleAuthDisplay(userInfo);
                             await getProgress(user.uid);
                         }
                     } catch (error) {
@@ -72,6 +89,61 @@
                     profileIcon.style.display = 'none';
                     window.location.href = 'login.html';
                 }
+                generateCertificateButton.addEventListener('click', async () => {
+                    if (!user) {
+                        console.error('Cannot generate certificate. No user is signed in.');
+                        alert('Please sign in to generate a certificate.');
+                        return;
+                    }
+
+                    try {
+                        const userId = user.uid;
+                        const userDocRef = doc(db, 'users', userId);
+                        const userDocSnap = await getDoc(userDocRef);
+
+                        if (userDocSnap.exists()) {
+                            const userData = userDocSnap.data();
+                            const courseName = 'SQL Fundamentals';
+                            // Get the completion date
+                            const completionDate = userData.completionDate
+                                ? new Date(userData.completionDate.seconds * 1000).toLocaleDateString() // Adjust for Firestore timestamp
+                                : new Date().toLocaleDateString();
+
+                            if (userData.quizzes && typeof userData.quizzes === 'object') {
+                                let totalMarks = 0;
+                                let quizzesCount = 0;
+
+                                // Calculate total marks and count quizzes
+                                for (const [quizId, quizData] of Object.entries(userData.quizzes)) {
+                                    if (quizData.marks !== undefined && typeof quizData.marks === 'number') {
+                                        totalMarks += quizData.marks;
+                                        quizzesCount++;
+                                    }
+                                }
+
+                                const totalLessons = 16; // Assume the total number of lessons is 16
+                                const averageMarks = (totalMarks / totalLessons).toFixed(2);
+
+                                console.log(' porgress courseName:', courseName);
+                                console.log('Average Marks:', averageMarks);
+                                console.log(' name:', userData.name);
+                                console.log(' completionDate :', completionDate);
+
+                                // Generate the certificate
+                                await generateCertificate(userData.name, courseName, averageMarks, completionDate);
+                            } else {
+                                console.error('No quizzes data found for the user.');
+                                alert('No quizzes data available.');
+                            }
+                        } else {
+                            console.error('User document not found in Firestore.');
+                            alert('User data not found.');
+                        }
+                    } catch (error) {
+                        console.error('Error generating certificate:', error);
+                        alert(`An error occurred while generating the certificate. Please try again : ${error}`);
+                    }
+                });
             });
 
             // Function to retrieve user's quiz progress and fetch SQL lesson titles
@@ -86,59 +158,62 @@
                     const quizzes = userSnap.data().quizzes;
                     // console.log('Quizzes:', quizzes);
 
-                    for (const lessonId in quizzes) {
+                    const lessonPromises = Object.keys(quizzes).map(async (lessonId) => {
                         const lessonSQLRef = doc(db, 'Courses', 'SQL', 'lessons', lessonId);
-
-                        let lessonSnap = await getDoc(lessonSQLRef);
-
+                        const lessonSnap = await getDoc(lessonSQLRef);
                         if (lessonSnap.exists()) {
                             const lessonData = lessonSnap.data();
                             const quizData = quizzes[lessonId];
 
-                            // Increment completed lessons if quiz is marked as completed
                             completedLessons++;
-
-                            // Add quiz marks to calculate the average
                             totalMarks += quizData.marks;
 
-                            // Display progress info in tables
                             displayProgress(lessonData.title, quizData);
                         }
-                    }
+                    });
+
+                    await Promise.all(lessonPromises);
+                    const completionPercentage = (completedLessons / totalLessons) * 100;
+                    const formattedPercentage = completionPercentage.toFixed(1);
+                    progressBar.style.width = `${formattedPercentage}%`;
+                    progressText.textContent = `${formattedPercentage}% of SQL Course Lessons Completed`;
+
                     // Update progress bar
                     console.log('completedLessons', completedLessons);
 
                     console.log('totalLessons', totalLessons);
                     console.log('quizzes', quizzes);
 
-                    const completionPercentage = (completedLessons / totalLessons) * 100;
-                    const formattedPercentage = completionPercentage.toFixed(1);
-                    progressBar.style.width = `${formattedPercentage}%`;
-                    progressText.textContent = `${formattedPercentage}% of SQL Course Lessons Completed`;
-
                     // Check if user has completed all lessons
                     if (completedLessons === totalLessons) {
-                        congratulatoryMessage.style.display = 'block'; // Show congrats message
-                        progressOverview.style.display = 'none';
-                        // YourProgress.style.display = 'none';
-                        const averageMarks = (totalMarks / totalLessons).toFixed(2);
-                        averageMarksMessage.textContent = `Average Marks: ${averageMarks}/10`;
-                        averageMarksMessage.style.display = 'block'; // Show average marks
+                        setTimeout(() => {
+                            document.getElementById('congratulatoryMessage').style.display = 'block';
+                            document.getElementById('progressOverview').style.display = 'none';
+                            const averageMarks = (totalMarks / totalLessons).toFixed(2);
+                            const averageMarksMessage = document.getElementById('averageMarksMessage');
+                            averageMarksMessage.style.display = 'block';
+                            averageMarksMessage.textContent = `Average Marks: ${averageMarks}/10`;
+                            generateCertificateButton.style.display = 'block';
+                            const goToExerciseButton = document.getElementById('goToExerciseButton');
+                            exerciseSection.style.display = 'flex';
+                            exerciseSection.style.flexDirection = 'column';
+                            goToExerciseButton.style.display = 'block';
+                            goToExerciseButton.addEventListener('click', ()=>{
+                                window.location = 'exercise.html';
+                            })
+                        }, 200); // Add a slight delay to prevent UI freezing
+                    }
+                    else {
+                        progressOverview.style.display = 'block';
                     }
                 }
             }
 
             // Function to display the progress in respective tables
-            function displayProgress(lessonTitle, quizData, isNoSql) {
-                const tableBody = isNoSql ? noSqlTableBody : sqlTableBody;
+            function displayProgress(lessonTitle, quizData) {
                 const row = document.createElement('tr');
-
-                row.innerHTML = `
-                    <td>${lessonTitle}</td>
-                    <td>${quizData.marks}/10</td>
-                `;
-
-                tableBody.appendChild(row);
+                row.innerHTML = `<td>${lessonTitle}</td><td>${quizData.marks}/10</td>`;
+                sqlTableBody.appendChild(row);
             }
 
             // Handle sign-out
@@ -218,7 +293,7 @@
                                                 z-index: 100; 
                                                 width: 280px; 
                                                 transition: all 0.3s ease;">
-                                                <span id="userName"
+                                                <span class="username"
                                                     style="display: block; color: #0E3D57; margin-bottom: 10px; font-size: 0.9rem;">Name
                                                     :</span>
                                                 <span id="userEmail"
@@ -236,7 +311,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Header Content -->
             <div class="header_container">
                 <div class="container">
@@ -259,10 +333,6 @@
                                         <!-- <li><a href="news.html">news</a></li> -->
                                         <li><a href="contact.html">contact Us</a></li>
                                     </ul>
-                                    <!-- <div class="search_button"><i class="fa fa-search" aria-hidden="true"></i></div> -->
-
-                                    <!-- Hamburger -->
-
                                     <div class="hamburger menu_mm">
                                         <i class="fa fa-bars menu_mm" aria-hidden="true"></i>
                                     </div>
@@ -296,10 +366,10 @@
 
         <div class="container">
 
-            <header class="header1" style="color: #fff;" id ='YourProgress'>
+            <header class="header1" style="color: #fff;" id='YourProgress'>
                 <h1>Your Progress</h1>
                 <div class="user-profile">
-                    <span class="username" id="username"></span>
+                    <span class="username"></span>
                 </div>
             </header>
 
@@ -308,21 +378,29 @@
                 <div id="congratulatoryMessage" style="display:none;">
                     <h3>🎉🎓 Congratulations! You've completed the course! 🎉🏆</h3>
                 </div>
-
                 <!-- Average marks message -->
                 <div id="averageMarksMessage" style="display:none;">
                     <h4>Average Marks: </h4>
                 </div>
+                <button id="generateCertificateButton" style="display: none;">
+                    Generate Certificate
+                </button>
             </div>
 
-
             <!-- Progress Section -->
-            <section id='progressOverview' class="progress-overview">
+            <section id='progressOverview' class="progress-overview" style="display: none;">
                 <h3>Lessons Progress</h3>
                 <div class="progress-bar-container">
                     <div class="progress-bar" id="progress-bar"></div>
                 </div>
                 <p id="progress-text" class="progress-text">0% Of Courses's Lessons Completed</p>
+            </section>
+            <!-- exercise Section -->
+            <section id="exerciseSection" class="exercise-Section" style="display: none;">
+                <h3>Click here to access additional exercises to refresh your knowledge.</h3>
+                <button id="goToExerciseButton" style="display: none;" class="exerciseBtn">
+                    Go to Exercise
+                </button>
             </section>
 
             <!-- SQL Lessons Table -->
@@ -342,7 +420,6 @@
             </section>
         </div>
         <!-- Footer -->
-
         <footer class="footer">
             <div class="container">
                 <div class="row">
@@ -388,7 +465,6 @@
                             </ul>
                         </div>
                     </div>
-
 
                     <div class="col-lg-3 footer_col">
                         <div class="footer_contact">

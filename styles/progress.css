@@ -87,3 +87,46 @@
 	color: white;
 	cursor: pointer;
 }
+
+#generateCertificateButton {
+    background-color: #0E3D57;
+    color: #fff;
+    border: none;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+#generateCertificateButton:hover {
+    background-color: #65A9C2;
+    color: #fff;
+    cursor: pointer;
+    border: none;
+}
+
+.exercise-Section {
+    margin-top: 30px;
+    margin-bottom: 20px;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+.exerciseBtn {
+    background: #0E3D57;
+    color: #fff;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    display: block;
+    width: 20%;
+    text-align: center;
+    margin-bottom: 3px;
+}
+
+.exerciseBtn:hover {
+    /* Corrected hover for myProgressButton */
+    background-color: #65A9C2;
+    color: #fff;
+}

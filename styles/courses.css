@@ -976,15 +976,7 @@ section {
 	/* Space between label and select */
 }
 
-.course_button {
-	display: flex;
-	align-items: center;
-	/* Center button content */
-	padding: 10px 20px;
-	margin-top: 5px;
-	align-self: center;
-	/* Align with select elements */
-}
+
 
 
 .courses {
@@ -1016,12 +1008,14 @@ section {
 	-moz-transition: all 200ms ease;
 	-ms-transition: all 200ms ease;
 	-o-transition: all 200ms ease;
-	transition: all 200ms ease;
+	transition: background-color 0.3s ease;
+    overflow: hidden;
 }
 
 .course_button .button_arrow {
 	width: 47px;
 	background: #65A9C2;
+	overflow: hidden;
 }
 
 .course_button span:first-child {
@@ -1033,18 +1027,20 @@ section {
 	padding-right: 44px;
 	line-height: 50px;
 	text-transform: uppercase;
+	overflow: hidden;
 }
 
 .course_button:hover {
 	background: #65A9C2;
+	overflow: hidden;
 }
 
 .course_button:hover .button_arrow {
 	background: #0E3D57;
+	overflow: hidden;
 }
 
-
-.course_input {
+/* .course_input {
 	position: relative;
 	width: 100%;
 	height: 50px;
@@ -1075,7 +1071,7 @@ section {
 .course_search_form>div:hover::after {
 	visibility: visible;
 	opacity: 1;
-}
+} */
 
 .course_input::-webkit-input-placeholder {
 	font-size: 12px !important;

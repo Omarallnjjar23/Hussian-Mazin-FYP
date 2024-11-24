@@ -27,7 +27,7 @@
 		import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js";
 
 		toastr.options = {
-			"closeButton": true,
+			"closeButton": false,
 			"debug": false,
 			"newestOnTop": false,
 			"progressBar": true,
@@ -136,11 +136,8 @@
 <body>
 
 	<div class="super_container">
-
 		<!-- Header -->
-
 		<header class="header">
-
 			<!-- Top Bar -->
 			<div class="top_bar">
 				<div class="top_bar_container">
@@ -261,7 +258,6 @@
 		</header>
 
 		<!-- Menu -->
-
 		<div class="menu d-flex flex-column align-items-end justify-content-start text-right menu_mm trans_400">
 			<div class="menu_close_container">
 				<div class="menu_close">
@@ -330,7 +326,7 @@
 		<!-- Contact -->
 		<div class="contact">
 			<div class="container-fluid">
-				<div class="row row-xl-eq-height">
+				<div class="row row-xl-eq-height" style="display: flex; justify-content: center;">
 					<!-- Contact Content -->
 					<div class="col-xl-6">
 						<div class="contact_content">
@@ -400,29 +396,28 @@
 							</form>
 						</div>
 					</div>
-				</div>
+					<!-- Contact Map -->
+					<div style="margin-top: 10px;">
+						<div class="contact_map">
 
-				<!-- Contact Map -->
-				<div class="col-xl-6 map_col">
-					<div class="contact_map">
+							<!-- Google Map -->
+							<div id="google_map" class="google_map">
+								<iframe
+									src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3983.4000722470364!2d101.73195977434881!3d3.2503307525236527!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc38c2f70795af%3A0xf808897bf1163a3!2sInternational%20Islamic%20University%20Malaysia!5e0!3m2!1sen!2smy!4v1729172014529!5m2!1sen!2smy"
+									width="600" height="1000" style="border:0;" allowfullscreen="" loading="lazy"
+									referrerpolicy="no-referrer-when-downgrade"></iframe>
+							</div>
 
-						<!-- Google Map -->
-						<div id="google_map" class="google_map">
-							<iframe
-								src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3983.4000722470364!2d101.73195977434881!3d3.2503307525236527!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc38c2f70795af%3A0xf808897bf1163a3!2sInternational%20Islamic%20University%20Malaysia!5e0!3m2!1sen!2smy!4v1729172014529!5m2!1sen!2smy"
-								width="600" height="1000" style="border:0;" allowfullscreen="" loading="lazy"
-								referrerpolicy="no-referrer-when-downgrade"></iframe>
 						</div>
-
 					</div>
 				</div>
+
 			</div>
 
 		</div>
 	</div>
 
 	<!-- Footer -->
-
 	<footer class="footer">
 		<div class="container">
 			<div class="row">
@@ -510,6 +505,7 @@
 		// Form submission handler
 		document.getElementById('contact_form').addEventListener('submit', function (event) {
 			event.preventDefault();
+
 			// Get the message value
 			const message = document.querySelector('textarea[name="message"]').value.trim();
 			const fromName = document.querySelector('input[name="name"]').value.trim();
@@ -524,11 +520,17 @@
 				return; // Stop the form submission
 			}
 
-			emailjs.sendForm('service_pbltmog', 'template_nu2pbji', this)
+			// Send the form to EmailJS with dynamic data
+			emailjs.sendForm('service_fusp8ys', 'template_nu2pbji', this, {
+				from_name: fromName,   // Correct syntax for passing dynamic data
+				message: message       // Correct syntax for passing dynamic data
+			})
 				.then(function (response) {
 					toastr.success('Message sent successfully!');
 				}, function (error) {
 					toastr.error('Failed to send message. Please try again.');
+					console.log('error',error);
+					
 				});
 		});
 	</script>

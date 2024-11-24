@@ -367,6 +367,7 @@ section {
 .top_bar {
 	width: 100%;
 	background: #2c2b31;
+	/* min-height: 800px; */
 }
 
 .header.scrolled .top_bar {}
@@ -1741,7 +1742,7 @@ section {
 
 .footer {
 	width: 100%;
-	background: #f2f1f8;
+	background: #FFFFFF;
 	padding-top: 108px;
 	padding-bottom: 90px;
 }

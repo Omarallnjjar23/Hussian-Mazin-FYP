@@ -21,9 +21,6 @@
     background-color: #dc3545; /* Red for error */
 }
 
-/* .toast.toast-info {
-    background-color: #3498db; 
-} */
 
 .toast.toast-warning {
     background-color: #ffc107; /* Yellow for warning */

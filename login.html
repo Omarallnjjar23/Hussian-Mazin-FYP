@@ -16,7 +16,7 @@
         import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js";
         import { getDoc, doc } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js"; // Firestore functions
         toastr.options = {
-            "closeButton": true,
+            "closeButton": false,
             "debug": false,
             "newestOnTop": false,
             "progressBar": true,
@@ -56,7 +56,7 @@
 
                     if (userDoc.exists()) {
                         const redirectPage = getRedirectPage(); // Check for redirect parameter
-                        toastr.success('Welcome to the DataED Website for DataBase Learners');
+                        toastr.success('Welcome to the DataED');
                         // Delay the redirection by 3 seconds (2000 milliseconds)
                         setTimeout(() => {
                             window.location.href = redirectPage || 'index.html';

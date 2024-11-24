@@ -27,7 +27,7 @@
 		import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js';
 
 		toastr.options = {
-			"closeButton": true,
+			"closeButton": false,
 			"debug": false,
 			"newestOnTop": false,
 			"progressBar": true,
@@ -127,7 +127,12 @@
 				const SqlBtn = document.getElementById('course_button');
 
 				SqlBtn.addEventListener('click', function () {
-					window.location.href = 'sql.html';
+					this.disabled = true;
+
+					// Delay the redirection slightly
+					setTimeout(() => {
+						window.location.href = 'sql.html';
+					}, 100); // Adjust the delay as needed
 				});
 			});
 
@@ -321,24 +326,21 @@
 		</div>
 
 		<!-- Courses -->
-
 		<div class="courses">
 			<div class="container">
-		
-					<div class="col-lg-10 offset-lg-1"
-						style="display: flex; flex-direction: column; align-items: center; gap: 3rem;">
-						<h4 class="center-text">Begin your journey to mastering databases with our comprehensive courses
-							on SQL. Whether you're just starting or looking to deepen your knowledge, we offer
-							resources and lessons tailored to your needs. Dive in and start learning today!
-						</h4>
-						<div>
-							<button id="course_button" class="course_button">
-								<span>Go To The SQL Course Page!</span>
-								<span class="button_arrow"><i class="fa fa-angle-right" aria-hidden="true"></i></span>
-							</button>
-						</div>
+				<div class="col-lg-10 offset-lg-1"
+					style="display: flex; flex-direction: column; align-items: center; gap: 3rem;">
+					<h4 class="center-text">Begin your journey to mastering databases with our comprehensive courses
+						on SQL. Whether you're just starting or looking to deepen your knowledge, we offer
+						resources and lessons tailored to your needs. Dive in and start learning today!
+					</h4>
+					<div>
+						<button id="course_button" class="course_button">
+							<span style="overflow: hidden;">Go To The SQL Course Page!</span>
+							<span class="button_arrow" style="overflow: hidden;"><i class="fa fa-angle-right"></i></span>
+						</button>
 					</div>
-
+				</div>
 				<!-- Featured Course -->
 				<div class="row featured_row">
 					<div class="col-lg-6 featured_col">
@@ -378,7 +380,6 @@
 </html>
 
 <!-- Footer -->
-
 <footer class="footer">
 	<div class="container">
 		<div class="row">

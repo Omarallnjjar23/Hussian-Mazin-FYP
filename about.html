@@ -26,7 +26,7 @@
 		import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js";
 
 		toastr.options = {
-			"closeButton": true,
+			"closeButton": false,
 			"debug": false,
 			"newestOnTop": false,
 			"progressBar": true,
@@ -69,7 +69,8 @@
 					getDoc(userDocRef).then((docSnapshot) => {
 						if (docSnapshot.exists()) {
 							const userData = docSnapshot.data();
-							userName.textContent = userData.name || 'User'; // Display name or fallback to 'User'
+							userName.textContent = 'Name: ' + (userData.name || 'User'); // Fallback to 'User' if no name
+							userEmail.textContent = 'Email: ' + (userData.email || user.email);
 							if (userData.role === 'admin') {
 								contactLink.textContent = 'Admin Panel'; // Change link text
 								contactLink.setAttribute('href', 'admin.html'); // Change href to admin page

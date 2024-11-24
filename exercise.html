@@ -5,14 +5,166 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exercise Page</title>
+    <!-- Toastr JS -->
+    <link rel="stylesheet" type="text/css" href="styles/bootstrap4/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="styles/main_styles.css">
+    <!-- <link rel="stylesheet" href="./styles/about.css"> -->
+    <link rel="stylesheet" href="./styles/toast.css">
+    <link rel="stylesheet" href="./styles/databasesTyp.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"> -->
     <link rel="stylesheet" href="./styles/exercise.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script type="module">
+        import { db } from './js/firebaseConfig.js';
+        import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "3000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        };
+
+    </script>
 </head>
 
 <body>
-    <h1>Exercises</h1>
+    <div class="super_container">
+        <!-- Header -->
+        <header class="header">
 
+            <!-- Top Bar -->
+            <div class="top_bar">
+                <div class="top_bar_container">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col">
+                                <div class="top_bar_content">
+                                    <ul class="top_bar_contact_list">
+                                        <li>
+                                            <div id="BtnQuestion" class="BtnQuestionC">Have any questions?</div>
+                                        </li>
+                                        <li>
+                                            <div>Albaiti.ahmed@live.iium.edu.my</div>
+                                        </li>
+                                        <li>
+                                            <div>mazin.muhammed@live.iium.edu.my</div>
+                                        </li>
+                                    </ul>
+                                    <div class="top_bar_login ml-auto" id="authContainer">
+                                        <ul id="authLinks"
+                                            style="list-style: none; margin: 0; padding: 0; display: flex;">
+                                            <li style="margin-right: 1px;"><a href="signUp.html"
+                                                    style="text-decoration: none; color: #fff;">Register</a></li>
+                                            <li><a href="login.html"
+                                                    style="text-decoration: none; color: #fff;">Login</a>
+                                            </li>
+                                        </ul>
+                                        <div id="profileContainer" style="position: relative; display: inline-block;">
+                                            <i class="fas fa-user-alt" id="profileIcon"
+                                                style="font-size: 24px; color: #fff; cursor: pointer; margin-right: 20px; transition: color 0.3s ease;"></i>
+
+                                            <div id="profileSection" style="display: none; 
+                                                    position: absolute; 
+                                                    right: 0; 
+                                                    top: 35px; 
+                                                    background-color: #fff; 
+                                                    border: 1px solid #ddd; 
+                                                    padding: 20px; 
+                                                    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); 
+                                                    border-radius: 10px; 
+                                                    z-index: 100; 
+                                                    width: 280px; 
+                                                    transition: all 0.3s ease;">
+                                                <span id="userName"
+                                                    style="display: block; color: #0E3D57; margin-bottom: 10px; font-size: 0.9rem;">Name
+                                                    :</span>
+                                                <span id="userEmail"
+                                                    style="display: block; color: #0E3D57; margin-bottom: 20px; font-size: 0.9rem;">Email
+                                                    :</span>
+
+                                                <button id="myProgressButton" class="myProgressButton">
+                                                    View My Progress
+                                                </button>
+
+                                                <button id="signOutButton" class="signOutButton">
+                                                    Sign Out
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header Content -->
+            <div class="header_container">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <div class="header_content">
+                                <div class="logo_container">
+                                    <a href="#">
+                                        <div class="logo_content d-flex flex-row align-items-end justify-content-start">
+                                            <div class="logo_img"><img src="images/assets//DataED_logo.jpg" alt=""
+                                                    style="width: 80px;"></div>
+                                        </div>
+                                    </a>
+                                </div>
+                                <nav class="main_nav_contaner ml-auto">
+                                    <ul class="main_nav">
+                                        <li><a href="index.html">home</a></li>
+                                        <li><a href="about.html">about us</a></li>
+                                        <li><a href="courses.html">lessons</a></li>
+                                        <!-- <li><a href="news.html">news</a></li> -->
+                                        <li><a href="contact.html"></a></li>
+                                    </ul>
+
+                                    <div class="hamburger menu_mm">
+                                        <i class="fa fa-bars menu_mm" aria-hidden="true"></i>
+                                    </div>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Header Search Panel -->
+            <div class="header_search_container">
+                <div class="container">
+                    <div class="row">
+                        <div class="col">
+                            <div class="header_search_content d-flex flex-row align-items-center justify-content-end">
+                                <form action="#" class="header_search_form">
+                                    <input type="search" class="search_input" placeholder="Search" required="required">
+                                    <button
+                                        class="header_search_button d-flex flex-column align-items-center justify-content-center">
+                                        <i class="fa fa-search" aria-hidden="true"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+    </div>
+    <h1>Exercises</h1>
     <!-- Search Bar -->
     <input type="text" id="searchBar" class="search-bar" placeholder="Search for SQL lessons...">
 
@@ -23,173 +175,381 @@
 
         <div id="quizContainer" style="display: none;">
             <h2 id="quizTitle"></h2>
-            <form id="quizForm"></form>
+            <form id="quizFormm"></form>
             <button id="submitQuiz">Submit</button>
-            <div id="quizResults" style="display: none;"></div>
         </div>
+        <div id="quizResults" style="display: none;"></div>
     </div>
 
+
     <script type="module">
-        import { db } from './js/firebaseConfig.js';
+        import { auth, db } from './js/firebaseConfig.js';
+        import { getFirestore, doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
+        import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js";
         import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-firestore.js';
-        toastr.options = {
-            "closeButton": true,
-            "debug": false,
-            "newestOnTop": false,
-            "progressBar": true,
-            "positionClass": "toast-top-right",
-            "preventDuplicates": false,
-            "onclick": null,
-            "showDuration": "300",
-            "hideDuration": "1000",
-            "timeOut": "5000",
-            "extendedTimeOut": "1000",
-            "showEasing": "swing",
-            "hideEasing": "linear",
-            "showMethod": "fadeIn",
-            "hideMethod": "fadeOut"
-        };
 
-        let questionsData;
+        document.addEventListener('DOMContentLoaded', function () {
 
-        // Load the JSON data
-        fetch('./exercise.json')
-            .then(response => response.json())
-            .then(data => {
-                questionsData = data.lessons;
-                console.log('questionsData', questionsData);
-                displayLessons(questionsData);
+            const toggleAuthDisplay = (user) => {
+                const authLinks = document.getElementById('authLinks');
+                const profileSection = document.getElementById('profileSection');
+                const userName = document.getElementById('userName');
+                const userEmail = document.getElementById('userEmail');
+                const myProgressButton = document.getElementById('myProgressButton');
+                const contactLink = document.querySelector('.main_nav a[href="contact.html"]');
+                const hQuestion = document.getElementById('BtnQuestion');
+
+                hQuestion.addEventListener('click', function () {
+                    window.location.href = 'contact.html';
+                })
+
+                if (user) {
+                    // Hide login/register links
+                    authLinks.style.display = 'none';
+                    // Show profile section
+                    profileIcon.style.display = 'block';
+                    // Display user's email
+                    userEmail.textContent = user.email;
+                    // Fetch user's custom data from Firestore (assumed to be in a 'users' collection)
+                    const userDocRef = doc(db, 'users', user.uid);
+                    getDoc(userDocRef).then((docSnapshot) => {
+                        if (docSnapshot.exists()) {
+                            const userData = docSnapshot.data();
+                            userName.textContent = 'Name: ' + (userData.name || 'User'); // Fallback to 'User' if no name
+							userEmail.textContent = 'Email: ' + (userData.email || user.email);
+                            if (userData.quizzes.length != 16 ){
+                                toastr.warning("You have not completed the course, sorry.");
+                                setTimeout(() => { window.location.href = 'index.html'; }, 2000); 
+                            }
+                            if (userData.role === 'admin') {
+                                contactLink.textContent = 'Admin Panel'; // Change link text
+                                contactLink.setAttribute('href', 'admin.html'); // Change href to admin page
+                            }
+                            else {
+                                contactLink.textContent = 'Contact Us';
+                            }
+                        }
+                    }).catch((error) => {
+                        console.log('Error fetching user data:', error);
+                        toastr.error('Error Fetching User Data');
+                    });
+                } else {
+                    // Show login/register links
+                    authLinks.style.display = 'block';
+                    // Hide profile section
+                    profileIcon.style.display = 'none';
+                }
+            };
+
+            myProgressButton.addEventListener('click', function () {
+                window.location.href = 'progress.html'
             })
-            .catch(error => console.error("Error loading questions JSON:", error));
 
-        function showQuiz(lessonTitle) {
-            const quizContainer = document.getElementById('quizContainer');
-            const quizForm = document.getElementById('quizForm');
-            const quizTitle = document.getElementById('quizTitle');
-
-            // Reset the quiz form and results
-            quizForm.innerHTML = '';
-            document.getElementById('quizResults').style.display = 'none';
-
-            // Find the selected lesson based on the title
-            const selectedLesson = questionsData.find(lesson => lesson.lessonTitle === lessonTitle);
-
-            if (!selectedLesson) {
-                alert("No questions available for this lesson.");
-                return;
-            }
-
-            quizTitle.textContent = `${lessonTitle} Quiz`;
-            selectedLesson.questions.forEach((question, index) => {
-                const questionElement = document.createElement('div');
-                questionElement.className = 'question-block';
-                questionElement.innerHTML = `<p>${index + 1}. ${question.question}</p>`;
-
-                question.options.forEach(option => {
-                    questionElement.innerHTML += `
-                <label>
-                    <input type="radio" name="question${index}" value="${option}">
-                    ${option}
-                </label><br>
-            `;
-                });
-
-                quizForm.appendChild(questionElement);
+            // Monitor auth state changes
+            onAuthStateChanged(auth, (user) => {
+                toggleAuthDisplay(user);
             });
 
-            quizContainer.style.display = 'block';
-        }
+            // Handle sign-out
+            document.getElementById('signOutButton').addEventListener('click', () => {
+                signOut(auth).then(() => {
+                    console.log('User signed out');
+                    toastr.success('User Signed Out Successfully');
+                }).catch((error) => {
+                    console.error('Error signing out:', error);
+                    toastr.error('Error Signing Out Please Try Again!');
+                });
+            });
 
-        // Function to show quiz questions for selected lesson
-        function submitQuiz() {
-            const quizResults = document.getElementById('quizResults');
-            const quizForm = document.getElementById('quizForm');
-            const questions = Array.from(quizForm.querySelectorAll('.question-block'));
+            // Profile icon toggle
+            const profileIcon = document.getElementById('profileIcon');
+            const profileSection = document.getElementById('profileSection');
 
-            let score = 0;
-            let resultsHTML = "<h3>Results</h3><ul>";
+            profileIcon.onclick = () => {
+                profileSection.style.display = profileSection.style.display === 'block' ? 'none' : 'block';
+            };
 
-            // Retrieve the lesson title from the quiz title
-            const lessonTitle = document.getElementById('quizTitle').textContent.replace(" Quiz", "");
-
-            // Find the selected lesson based on the title
-            const selectedLesson = questionsData.find(lesson => lesson.lessonTitle === lessonTitle);
-
-            // Check if the selected lesson exists
-            if (!selectedLesson) {
-                console.error(`No lesson found with title: ${lessonTitle}`);
-                toastr.error("Unable to submit quiz: Lesson not found.");
-                return; // Exit the function if the lesson is not found
-            }
-
-            // Loop through the questions and calculate the score
-            questions.forEach((question, index) => {
-                const userAnswer = document.querySelector(`input[name="question${index}"]:checked`);
-                // Use the correct answer from the selected lesson
-                const correctAnswer = selectedLesson.questions[index].correctAnswer;
-
-                if (userAnswer) {
-                    if (userAnswer.value === correctAnswer) {
-                        score++;
-                        resultsHTML += `<li>Question ${index + 1}: Correct</li>`;
-                    } else {
-                        resultsHTML += `<li>Question ${index + 1}: Incorrect (Correct answer: ${correctAnswer})</li>`;
-                    }
-                } else {
-                    resultsHTML += `<li>Question ${index + 1}: No answer selected (Correct answer: ${correctAnswer})</li>`;
+            // Click anywhere to close the profile section
+            document.addEventListener('click', (event) => {
+                const isClickInsideProfile = profileSection.contains(event.target) || profileIcon.contains(event.target);
+                if (!isClickInsideProfile) {
+                    profileSection.style.display = 'none'; // Hide the profile section
                 }
             });
 
-            resultsHTML += `</ul><p>Your score: ${score} out of ${questions.length}</p>`;
-            quizResults.innerHTML = resultsHTML;
-            quizResults.style.display = 'block';
 
-            // Clear the radio buttons after displaying results
-            questions.forEach((question, index) => {
-                const userAnswer = document.querySelectorAll(`input[name="question${index}"]`);
-                userAnswer.forEach(input => input.checked = false); // Clear the selection
+            function displayLessons(lessons) {
+                const lessonList = document.getElementById('lessonList');
+                const noResultsMessage = document.getElementById('noResults');
+
+                lessonList.innerHTML = ''; // Clear previous content
+                noResultsMessage.style.display = lessons.length === 0 ? 'block' : 'none';
+
+                if (lessons.length === 0) return;
+
+                lessons.forEach(lesson => {
+                    const lessonDiv = document.createElement('div');
+                    lessonDiv.className = 'lesson-item';
+                    lessonDiv.textContent = lesson.lessonTitle;
+
+                    lessonDiv.addEventListener('click', () => showQuiz(lesson.lessonTitle));
+                    lessonList.appendChild(lessonDiv);
+                });
+            }
+
+            let questionsData;
+
+            // Load the JSON data
+            fetch('./exercise.json')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('questionsData :', data);
+
+                    questionsData = data.lessons || [];
+                    console.log('questionsData', questionsData);
+                    displayLessons(questionsData);
+                })
+                .catch(error => {
+                    console.error("Error loading questions JSON:", error);
+                    toastr.error("There was an error loading the lessons. Please try again later.");
+                });
+
+            function showQuiz(lessonTitle) {
+                const quizContainer = document.getElementById('quizContainer');
+                const quizForm = document.getElementById('quizFormm');
+                const quizTitle = document.getElementById('quizTitle');
+                const quizResults = document.getElementById('quizResults');
+                if (!quizResults) {
+                    console.error('Quiz results element not found');
+                }
+
+                // Reset the quiz form and results
+                quizForm.innerHTML = '';
+                if (quizResults) {
+                    quizResults.style.display = 'none'; // Check if quizResults exists
+                }
+                // Make the quiz container visible
+                quizContainer.style.display = 'block';
+
+                // Find the selected lesson based on the title
+                const selectedLesson = questionsData.find(lesson => lesson.lessonTitle === lessonTitle);
+
+                if (!selectedLesson) {
+                    alert("No questions available for this lesson.");
+                    return;
+                }
+
+                quizTitle.textContent = `${lessonTitle} Quiz`;
+                selectedLesson.questions.forEach((question, index) => {
+                    const questionElement = document.createElement('div');
+                    questionElement.className = 'question-block';
+                    questionElement.innerHTML = `<p>${index + 1}. ${question.question}</p>`;
+
+                    question.options.forEach(option => {
+                        questionElement.innerHTML += `
+                            <label>
+                                <input type="radio" name="question${index}" value="${option}">
+                                ${option}
+                            </label><br>
+                        `;
+                    });
+
+                    quizForm.appendChild(questionElement);
+                });
+
+                setTimeout(() => {
+                    const containerOffset = quizContainer.getBoundingClientRect().top + window.pageYOffset;
+                    const offset = 160; // Adjust this value for how far above the element you want to scroll
+
+                    window.scrollTo({
+                        top: containerOffset - offset,
+                        behavior: 'smooth'
+                    });
+                }, 0);
+            }
+
+            function validateAnswers() {
+                const quizForm = document.getElementById('quizFormm');
+                const questions = Array.from(quizForm.querySelectorAll('.question-block'));
+
+                let allAnswered = true;
+
+                questions.forEach((question, index) => {
+                    const userAnswer = document.querySelector(`input[name="question${index}"]:checked`);
+                    if (!userAnswer) {
+                        allAnswered = false;
+                    }
+                });
+
+                if (!allAnswered) {
+                    toastr.warning("Please answer all the questions before submitting the quiz!");
+                }
+
+                return allAnswered;
+            }
+
+            function submitQuiz() {
+                if (!validateAnswers()) return; // Stop submission if validation fails
+                const quizResults = document.getElementById('quizResults');
+                if (!quizResults) {
+                    console.error('Quiz results element not found');
+                    return;
+                } else {
+                    quizResults.style.display = 'block';
+                    const quizForm = document.getElementById('quizFormm');
+                    const questions = Array.from(quizForm.querySelectorAll('.question-block'));
+                    if (questions && quizForm && quizResults) {
+
+                        console.log('all good so what ?');
+
+                    }
+                    let score = 0;
+                    let resultsHTML = "<h3>Results</h3><ul>";
+
+                    const lessonTitle = document.getElementById('quizTitle').textContent.replace(" Quiz", "");
+                    const selectedLesson = questionsData.find(lesson => lesson.lessonTitle === lessonTitle);
+
+                    if (!selectedLesson) {
+                        toastr.error("Error: Lesson not found.");
+                        return;
+                    }
+
+                    questions.forEach((question, index) => {
+                        const userAnswer = document.querySelector(`input[name="question${index}"]:checked`);
+                        const correctAnswer = selectedLesson.questions[index].correctAnswer;
+
+                        if (userAnswer) {
+                            if (userAnswer.value === correctAnswer) {
+                                score++;
+                                resultsHTML += `<li>Question ${index + 1}: Correct</li>`;
+                            } else {
+                                resultsHTML += `<li>Question ${index + 1}: Incorrect (Correct answer: ${correctAnswer})</li>`;
+                            }
+                        }
+                    });
+
+                    resultsHTML += `</ul><p>Your score: ${score} out of ${questions.length}</p>`;
+                    quizResults.innerHTML = resultsHTML;
+                    quizResults.style.display = 'block';
+
+                    // Hide quiz container after submission
+                    document.getElementById('quizContainer').style.display = 'none';
+
+                    toastr.success(`Quiz submitted! Your score: ${score} out of ${questions.length}`);
+                }
+
+            }
+
+            // Add event listener for submit button
+            document.getElementById('submitQuiz').addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent default form submission
+                submitQuiz();
             });
 
+            // Function to filter lessons based on search input
+            function filterLessons(searchTerm) {
+                const filteredLessons = questionsData.filter(lesson =>
+                    lesson.lessonTitle.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+                displayLessons(filteredLessons);
+            }
 
-            // Toastr notification
-            toastr.success(`Quiz submitted! Your score: ${score} out of ${questions.length}`);
-        }
-
-        // Function to display lessons in the lesson list
-        function displayLessons(lessons) {
-            const lessonList = document.getElementById('lessonList');
-            lessonList.innerHTML = '';
-
-            lessons.forEach(lesson => {
-                const lessonItem = document.createElement('li');
-                lessonItem.className = 'lesson-item';
-                lessonItem.textContent = lesson.lessonTitle;
-                lessonItem.onclick = () => showQuiz(lesson.lessonTitle);
-                lessonList.appendChild(lessonItem);
+            // Add event listener to the search bar
+            const searchBar = document.getElementById('searchBar');
+            searchBar.addEventListener('input', (event) => {
+                const searchTerm = event.target.value.trim();
+                if (searchTerm) {
+                    filterLessons(searchTerm);
+                } else {
+                    displayLessons(questionsData); // Show default lessons if search bar is empty
+                }
             });
-        }
-
-        // Function to search lessons
-        const searchBar = document.getElementById('searchBar');
-        searchBar.addEventListener('input', () => {
-            const searchText = searchBar.value.toLowerCase().trim();
-            const filteredLessons = questionsData.filter(lesson =>
-                lesson.lessonTitle.toLowerCase().includes(searchText)
-            );
-
-            displayLessons(filteredLessons);
-
-            document.getElementById('noResults').style.display = filteredLessons.length === 0 ? 'block' : 'none';
-            document.getElementById('lessonContainer').style.display = 'block';
-        });
-
-        // Add event listener for submit button
-        document.getElementById('submitQuiz').addEventListener('click', (event) => {
-            event.preventDefault(); // Prevent the default form submission
-            submitQuiz();
         });
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="row">
+                <!-- About -->
+                <div class="col-lg-3 footer_col">
+                    <div class="footer_about">
+                        <div class="logo_container">
+                            <a href="index.html">
+                                <div class="logo_content d-flex flex-row align-items-end justify-content-start">
+                                    <div class="logo_img"><img src="images/assets/DataED_logo.jpg" alt=""
+                                            style="width: 80px;"></div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="footer_about_text">
+                            <p>Welcome to our website. We are dedicated to providing quality content and exceptional
+                                service to our users. Your feedback is valuable to us as we strive for continuous
+                                improvement.</p>
+                        </div>
+                        <div class="footer_social">
+                            <ul>
+                                <li><a href="https://plus.google.com/" target="_blank" rel="noopener noreferrer"><i
+                                            class="fab fa-google-plus" aria-hidden="true"></i></a></li>
+                                <li><a href="https://www.pinterest.com/" target="_blank" rel="noopener noreferrer"><i
+                                            class="fab fa-pinterest" aria-hidden="true"></i></a></li>
+                                <li><a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer"><i
+                                            class="fab fa-facebook" aria-hidden="true"></i></a></li>
+                                <li><a href="https://x.com/" target="_blank" rel="noopener noreferrer"><i
+                                            class="fab fa-twitter" aria-hidden="true"></i></a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 footer_col">
+                    <div class="footer_links">
+                        <div class="footer_title">Quick menu</div>
+                        <ul class="footer_list">
+                            <li><a href="index.html">Home</a></li>
+                            <li><a href="about.html">About us</a></li>
+                            <li><a href="contact.html">Contact Us</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-lg-3 footer_col">
+                    <div class="footer_contact">
+                        <div class="footer_title">Contact Us</div>
+                        <div class="footer_contact_info">
+                            <div class="footer_contact_item">
+                                <div class="footer_contact_title">Address:</div>
+                                <div class="footer_contact_line">Jalan Gombak, 53100 Kuala Lumpur,
+                                    Malaysia</div>
+                            </div>
+                            <div class="footer_contact_item">
+                                <div class="footer_contact_title">Phone:</div>
+                                <div class="footer_contact_line">+966 532666580</div>
+                            </div>
+                            <div class="footer_contact_item">
+                                <div class="footer_contact_title">Email:</div>
+                                <div class="footer_contact_line">Albaiti.ahmed@live.iium.edu.my</div>
+                                <div class="footer_contact_line">mazin.muhammed@live.iium.edu.my</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="styles/bootstrap4/popper.js"></script>
+    <script src="styles/bootstrap4/bootstrap.min.js"></script>
+    <script src="plugins/greensock/TweenMax.min.js"></script>
+    <script src="plugins/greensock/TimelineMax.min.js"></script>
+    <script src="plugins/scrollmagic/ScrollMagic.min.js"></script>
+    <script src="plugins/greensock/animation.gsap.min.js"></script>
+    <script src="plugins/greensock/ScrollToPlugin.min.js"></script>
+    <script src="plugins/OwlCarousel2-2.2.1/owl.carousel.js"></script>
+    <script src="plugins/easing/easing.js"></script>
+    <script src="plugins/video-js/video.min.js"></script>
+    <script src="plugins/video-js/Youtube.min.js"></script>
+    <script src="plugins/parallax-js-master/parallax.min.js"></script>
+    <script src="js/custom.js"></script>
 </body>
 
 </html>
