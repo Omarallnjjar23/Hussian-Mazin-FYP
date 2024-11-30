@@ -216,11 +216,11 @@
                         if (docSnapshot.exists()) {
                             const userData = docSnapshot.data();
                             userName.textContent = 'Name: ' + (userData.name || 'User'); // Fallback to 'User' if no name
-							userEmail.textContent = 'Email: ' + (userData.email || user.email);
-                            if (userData.quizzes.length != 16 ){
-                                toastr.warning("You have not completed the course, sorry.");
-                                setTimeout(() => { window.location.href = 'index.html'; }, 2000); 
-                            }
+                            userEmail.textContent = 'Email: ' + (userData.email || user.email);
+                            // if (userData.quizzes.length != 16 ){
+                            //     toastr.warning("You have not completed the course, sorry.");
+                            //     setTimeout(() => { window.location.href = 'index.html'; }, 2000); 
+                            // }
                             if (userData.role === 'admin') {
                                 contactLink.textContent = 'Admin Panel'; // Change link text
                                 contactLink.setAttribute('href', 'admin.html'); // Change href to admin page
@@ -340,20 +340,35 @@
                 }
 
                 quizTitle.textContent = `${lessonTitle} Quiz`;
+
                 selectedLesson.questions.forEach((question, index) => {
                     const questionElement = document.createElement('div');
                     questionElement.className = 'question-block';
                     questionElement.innerHTML = `<p>${index + 1}. ${question.question}</p>`;
-
-                    question.options.forEach(option => {
+                    if (question.code) {
+                        // Render code questions
                         questionElement.innerHTML += `
-                            <label>
-                                <input type="radio" name="question${index}" value="${option}">
-                                ${option}
-                            </label><br>
-                        `;
-                    });
-
+                        <textarea id="codeInput${index}" name="question${index}" rows="5" style="width: 100%;"></textarea>
+                    `;
+                    } else {
+                        // Render MSQ questions
+                        question.options.forEach(option => {
+                            questionElement.innerHTML += `
+                        <label>
+                            <input type="radio" name="question${index}" value="${option}">
+                            ${option}
+                        </label><br>
+                    `;
+                        });
+                    }
+                    // question.options.forEach(option => {
+                    //     questionElement.innerHTML += `
+                    //         <label>
+                    //             <input type="radio" name="question${index}" value="${option}">
+                    //             ${option}
+                    //         </label><br>
+                    //     `;
+                    // });
                     quizForm.appendChild(questionElement);
                 });
 
@@ -375,9 +390,18 @@
                 let allAnswered = true;
 
                 questions.forEach((question, index) => {
-                    const userAnswer = document.querySelector(`input[name="question${index}"]:checked`);
-                    if (!userAnswer) {
-                        allAnswered = false;
+                    if (question.querySelector(`textarea[name="question${index}"]`)) {
+                        // Code question: Check if textarea is filled
+                        const userAnswer = document.getElementById(`codeInput${index}`).value.trim();
+                        if (!userAnswer) {
+                            allAnswered = false;
+                        }
+                    } else {
+                        // MSQ: Check if any option is selected
+                        const userAnswer = document.querySelector(`input[name="question${index}"]:checked`);
+                        if (!userAnswer) {
+                            allAnswered = false;
+                        }
                     }
                 });
 
@@ -388,6 +412,7 @@
                 return allAnswered;
             }
 
+
             function submitQuiz() {
                 if (!validateAnswers()) return; // Stop submission if validation fails
                 const quizResults = document.getElementById('quizResults');
@@ -396,13 +421,13 @@
                     return;
                 } else {
                     quizResults.style.display = 'block';
+                    quizResults.style.marginBottom = '10px';
                     const quizForm = document.getElementById('quizFormm');
                     const questions = Array.from(quizForm.querySelectorAll('.question-block'));
                     if (questions && quizForm && quizResults) {
-
-                        console.log('all good so what ?');
-
+                        toastr.error("Error: Quiz structure is missing.");
                     }
+
                     let score = 0;
                     let resultsHTML = "<h3>Results</h3><ul>";
 
@@ -415,19 +440,43 @@
                     }
 
                     questions.forEach((question, index) => {
-                        const userAnswer = document.querySelector(`input[name="question${index}"]:checked`);
+                        let userAnswer;
                         const correctAnswer = selectedLesson.questions[index].correctAnswer;
+                        const isCodeQuestion = selectedLesson.questions[index].code;
+                        // const userAnswer = document.querySelector(`input[name="question${index}"]:checked`);
 
-                        if (userAnswer) {
-                            if (userAnswer.value === correctAnswer) {
+                        // if (userAnswer) {
+                        //     if (userAnswer.value === correctAnswer) {
+                        //         score++;
+                        //         resultsHTML += `<li>Question ${index + 1}: Correct</li>`;
+                        //     } else {
+                        //         resultsHTML += `<li>Question ${index + 1}: Incorrect (Correct answer: ${correctAnswer})</li>`;
+                        //     }
+                        // }
+                        if (isCodeQuestion) {
+                            // For code questions, get the value from the textarea
+                            userAnswer = document.getElementById(`codeInput${index}`).value.trim();
+                            if (userAnswer === correctAnswer) {
                                 score++;
                                 resultsHTML += `<li>Question ${index + 1}: Correct</li>`;
                             } else {
-                                resultsHTML += `<li>Question ${index + 1}: Incorrect (Correct answer: ${correctAnswer})</li>`;
+                                resultsHTML += `<li>Question ${index + 1}: Incorrect<br><strong>Your Answer:</strong> ${userAnswer || "No answer"}<br><strong>Correct Answer:</strong> ${correctAnswer}</li>`;
+                            }
+                        } else {
+                            // For MSQ questions, get the selected radio value
+                            userAnswer = document.querySelector(`input[name="question${index}"]:checked`);
+                            if (userAnswer) {
+                                if (userAnswer.value === correctAnswer) {
+                                    score++;
+                                    resultsHTML += `<li>Question ${index + 1}: Correct</li>`;
+                                } else {
+                                    resultsHTML += `<li>Question ${index + 1}: Incorrect<br><strong>Your Answer:</strong> ${userAnswer.value}<br><strong>Correct Answer:</strong> ${correctAnswer}</li>`;
+                                }
+                            } else {
+                                resultsHTML += `<li>Question ${index + 1}: No Answer Provided<br><strong>Correct Answer:</strong> ${correctAnswer}</li>`;
                             }
                         }
                     });
-
                     resultsHTML += `</ul><p>Your score: ${score} out of ${questions.length}</p>`;
                     quizResults.innerHTML = resultsHTML;
                     quizResults.style.display = 'block';
@@ -437,7 +486,6 @@
 
                     toastr.success(`Quiz submitted! Your score: ${score} out of ${questions.length}`);
                 }
-
             }
 
             // Add event listener for submit button

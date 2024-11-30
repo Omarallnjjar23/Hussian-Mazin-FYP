@@ -60,12 +60,11 @@
                         // Delay the redirection by 3 seconds (2000 milliseconds)
                         setTimeout(() => {
                             window.location.href = redirectPage || 'index.html';
-                        }, 2000);
+                        }, 1000);
                     } else {
                         // User authenticated but no profile exists in Firestore
                         toastr.error("Profile not found. Please register first.");
                     }
-
                 } catch (error) {
                     console.error('Error checking Firestore:', error.message);
                     errorMessage.textContent = `Error: ${error.message}`;

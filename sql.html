@@ -195,6 +195,12 @@
 
             const viewLessonContent = async (lessonId, viewLessonBtn) => {
 
+                const reQuBtns = document.getElementsByClassName('quizContainer');
+
+                while (reQuBtns.length > 0) {
+                    reQuBtns[0].parentNode.removeChild(reQuBtns[0]);
+                }
+
                 if (currentLessonContent) {
                     currentLessonContent.remove();
                     currentLessonContent = null; // Clear the reference
@@ -232,7 +238,7 @@
                         console.log(' viewLessonContent lessonData : ', lessonData);
                         const lessonContent = lessonData.textContent || "<p>No content available for this lesson.</p>";
                         const videoUrl = lessonData.videoUrl && lessonData.videoUrl !== ''
-                            ? `<div class="video-container" style="position: relative; padding-top: 56.25%; margin-top: 15px;">
+                            ? `<div class="video-container">
                                     <iframe 
                                     style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"
                                         src="https://www.youtube.com/embed/${getYouTubeVideoId(lessonData.videoUrl)}"
@@ -245,11 +251,12 @@
 
                         lessonText1.classList.add('lessonContent1');
                         lessonText1.style.padding = '20px';
+                        lessonText1.style.marginTop = '20px';
                         lessonText1.innerHTML = `
                                 <div class="card shadow-sm h-100" style="border-radius: 10px;">
                                     <div class="card-bodyv">
-                                        ${lessonContent} <!-- Use lesson content or placeholder message -->
                                         ${videoUrl} <!-- Use video element or placeholder message -->
+                                        <div class="margin-top-10">${lessonContent} <!-- Use lesson content or placeholder message --></div>
                                        <button class="close-modal">Close</button>
                                     </div>
                                 </div>
@@ -280,9 +287,6 @@
                                 });
                             }
                         }, 0);
-
-                        document.body.appendChild(lessonText1);
-
 
                         // Add event listener to close the modal
                         lessonText1.querySelector('.close-modal').addEventListener('click', () => {
@@ -392,6 +396,9 @@
                                     Lesson ${lessonNumber}: ${title} <br/> (Marks: ${marks}/10)<br/> 
                                     Status: <span style="color: red;">Not Passed ❌</span>
                                 </h5>
+                                  <button class="view-lesson" style="border-radius: 5px; margin-top:10px;" data-lesson="${lessonId}">
+                                        View Lesson
+                                    </button>
                                     <button class="review-quiz" style="border-radius: 5px;" data-lesson="${lessonId}">
                                         Review Quiz
                                     </button>
@@ -401,6 +408,12 @@
                                 </div>
                             </div>
                         `;
+                                    lessonElement.querySelector('.view-lesson').addEventListener('click', () => {
+                                        const viewLessonBtn = event.target; // The specific button being clicked
+                                        // console.log('Clicked button:', viewLessonBtn);
+                                        viewLessonBtn.disabled = true;
+                                        viewLessonContent(lessonId, viewLessonBtn); // Display the content of the lesson
+                                    });
                                     lessonElement.querySelector('.review-quiz').addEventListener('click', () => {
                                         displayQuizReview(lessonId, userSnapshot.id);
                                     });
@@ -494,8 +507,8 @@
                             lessonText.innerHTML = `
                                 <div class="card shadow-sm h-100" style="border-radius: 10px;">
                                     <div class="card-bodyv">
-                                        ${lessonContent} <!-- Use lesson content or placeholder message -->
                                         ${videoUrl} <!-- Use video element or placeholder message -->
+                                        ${lessonContent} <!-- Use lesson content or placeholder message -->
                                         <button class="take-quiz" style="border-radius: 10px; margin-top: 15px;" data-lesson="${lessonId}">
                                             Take a quiz
                                         </button>
@@ -563,6 +576,19 @@
             ///////////////////////////////////////////////////////////////////////////
             const displayRetakeQuiz = async (lessonId, id) => {
 
+                const lessonContents = document.getElementsByClassName('lessonContent1');
+                const vLessBtns = document.getElementsByClassName('view-lesson');
+
+                // Loop through the HTMLCollection and remove each node
+                // Enable all "View Lesson" buttons
+                for (let i = 0; i < vLessBtns.length; i++) {
+                    vLessBtns[i].disabled = false;
+                }
+                while (lessonContents.length > 0) {
+                    lessonContents[0].parentNode.removeChild(lessonContents[0]);
+                }
+
+                // const j= ';';
                 try {
                     const userProgress = await fetchUserProgress(id);
                     const quizQuestions = [];
@@ -585,9 +611,8 @@
                     // console.error("Error fetching quiz questions: ", error);
                     toastr.error("Error fetching quiz questions");
                 }
-                // console.log('lessonId', lessonId);
-                // console.log('id', id);
             }
+
             function validateCodeAnswer(userSQL, solutionSQL) {
                 // Trim and normalize the SQL strings to ensure minor differences like whitespace don't cause mismatches
                 const normalizeSQL = (sql) => sql.replace(/\s+/g, ' ').trim().toLowerCase();
@@ -610,14 +635,10 @@
                         console.error('User not found');
                         return;
                     }
-
-                    // console.log('resetQuiz');
-
                     // Reference to the specific quiz data under the user's 'quizzes' field
                     await updateDoc(userRef, {
                         [`quizzes.${lessonId}`]: deleteField() // Deletes the lesson's quiz data
                     });
-                    // console.log(`Quiz data for lesson ${lessonId} reset successfully.`);
                 } catch (error) {
                     console.error("Error resetting quiz data:", error);
                 }
@@ -626,7 +647,6 @@
             async function fetchLessonSubCollectionLength(userId) {
                 const questionsRef = collection(db, 'Courses', 'SQL', 'lessons');
                 const lessonsSnapshot = await getDocs(questionsRef);
-
                 return lessonsSnapshot.size; // Returns the number of documents in the sub-collection
             }
 
@@ -635,7 +655,6 @@
                 const quizContainer = document.createElement('form');
                 quizContainer.classList.add('quizContainer');
                 quizContainer.id = 'quizForm';
-
                 // Loop through each question
                 quizQuestions.forEach((question, index) => {
                     const questionElement = document.createElement('div');
@@ -646,7 +665,7 @@
                         // Display a textarea for SQL code input
                         answerOptions = `
                             <label for="codeAnswer${index}">Write your SQL query:</label><br/>
-                            <textarea id="codeAnswer${index}" name="codeAnswer${index}" rows="5" cols="60"></textarea>
+                            <textarea id="codeAnswer${index}" name="codeAnswer${index}" rows="5" cols="60" class='code-input'> </textarea>
                         `;
                     } else {
                         // Loop through the answers object (instead of array) to display answer options
@@ -780,8 +799,6 @@
                 // Fetch user's answers and quiz questions
                 const userAnswers = await fetchUserAnswers(userId, lessonId);
                 const quizQuestions = await fetchQuizQuestions(lessonId);
-                // console.log('userAnswers', userAnswers);
-                // console.log('quizQuestions', quizQuestions);
 
                 const reviewContainer = document.createElement('div');
                 reviewContainer.classList.add('quizReview');
@@ -888,7 +905,62 @@
                 document.getElementById('lessonsContainer').appendChild(reviewContainer);
             };
 
+            ///////////////////////////////////showEncouragementModal/////////////////////////
+
+            function showEncouragementModal(completedLessons) {
+                const modal = document.getElementById("encouragementModal");
+                const progressBar = document.getElementById("progressBar");
+                let encouragementMessage = "";
+                if (completedLessons === 3) {
+                    encouragementMessage = "🎉 Great start! You've completed the first 3 lessons! Keep up the amazing work! 🚀";
+                } else if (completedLessons === 6) {
+                    encouragementMessage = "👏 You're doing awesome! 6 lessons down! Keep building your knowledge! 🧠✨";
+                } else if (completedLessons === 9) {
+                    encouragementMessage = "🌟 You're halfway there! 9 lessons completed! Keep pushing forward! 💪";
+                } else if (completedLessons === 12) {
+                    encouragementMessage = "🔥 Almost there! 12 lessons completed! You're so close to the finish line! 🏁💼";
+                } else if (completedLessons === 15) {
+                    encouragementMessage = "🥳 Incredible effort! Just one more lesson to go! You've got this! 🎯🏆";
+                } else {
+                    encouragementMessage = `💪 You’ve completed ${completedLessons} lessons! Keep going and achieve greatness! 📈`;
+                }
+                modal.querySelector("p").textContent = encouragementMessage;
+
+                // Reset progress bar and show modal
+                progressBar.style.width = "100%";
+                modal.style.display = "flex";
+
+                // Animate the progress bar
+                setTimeout(() => {
+                    progressBar.style.width = "0%";
+                }, 50); // Small delay for smooth transition
+
+                // Auto-hide the modal after 10 seconds
+                setTimeout(() => {
+                    modal.style.display = "none";
+                }, 10000);
+            }
+
             const submitQuiz = async (userId, lessonId, userAnswers) => {
+
+                // Reference to the user's document in the 'users' collection
+                const userDocRef = doc(db, 'users', userId);
+                const userDocSnap = await getDoc(userDocRef);
+
+                if (userDocSnap.exists()) {
+                    showEncouragementModal(userId);
+                    // If the user document exists, return the progress field from the document
+                    const userData = userDocSnap.data();
+                    console.log('userData :', userData);
+                    const completedLessons = Object.keys(userData.quizzes).length;
+                    console.log('fetchUserProgress completedLessons :', completedLessons);
+
+                    // Check if completed lessons are a multiple of 3
+                    if (completedLessons > 0 && completedLessons % 3 === 0) {
+                        showEncouragementModal(completedLessons);
+                    }
+                }
+
                 try {
                     // First, reset any previous quiz data for a clean retake
                     await resetQuiz(userId, lessonId);
@@ -963,41 +1035,7 @@
             };
         });
 
-        ///////////////////////////////////showEncouragementModal/////////////////////////
 
-        function showEncouragementModal(completedLessons) {
-            const modal = document.getElementById("encouragementModal");
-            const progressBar = document.getElementById("progressBar");
-            let encouragementMessage = "";
-            if (completedLessons === 3) {
-                encouragementMessage = "🎉 Great start! You've completed the first 3 lessons! Keep up the amazing work! 🚀";
-            } else if (completedLessons === 6) {
-                encouragementMessage = "👏 You're doing awesome! 6 lessons down! Keep building your knowledge! 🧠✨";
-            } else if (completedLessons === 9) {
-                encouragementMessage = "🌟 You're halfway there! 9 lessons completed! Keep pushing forward! 💪";
-            } else if (completedLessons === 12) {
-                encouragementMessage = "🔥 Almost there! 12 lessons completed! You're so close to the finish line! 🏁💼";
-            } else if (completedLessons === 15) {
-                encouragementMessage = "🥳 Incredible effort! Just one more lesson to go! You've got this! 🎯🏆";
-            }  else {
-                encouragementMessage = `💪 You’ve completed ${completedLessons} lessons! Keep going and achieve greatness! 📈`;
-            }
-            modal.querySelector("p").textContent = encouragementMessage;
-
-            // Reset progress bar and show modal
-            progressBar.style.width = "100%";
-            modal.style.display = "flex";
-
-            // Animate the progress bar
-            setTimeout(() => {
-                progressBar.style.width = "0%";
-            }, 50); // Small delay for smooth transition
-
-            // Auto-hide the modal after 10 seconds
-            setTimeout(() => {
-                modal.style.display = "none";
-            }, 5000);
-        }
         // Function to fetch the user's progress from Firestore
         const fetchUserProgress = async (userId) => {
             try {
@@ -1006,24 +1044,14 @@
                 const userDocSnap = await getDoc(userDocRef);
 
                 if (userDocSnap.exists()) {
-                    showEncouragementModal(userId);
-                    // If the user document exists, return the progress field from the document
                     const userData = userDocSnap.data();
-                    console.log('userData :', userData);
-                    const completedLessons = Object.keys(userData.quizzes).length;
-                    console.log('fetchUserProgress completedLessons :', completedLessons);
-
-                    // Check if completed lessons are a multiple of 3
-                    if (completedLessons > 0 && completedLessons % 3 === 0) {
-                        showEncouragementModal(completedLessons);
-                    }
                     return userData.quizzes || {}; // Return the progress object, or an empty object if it doesn't exist
                 } else {
-                    // console.error(`No such user document for userId: ${userId}`);
+                    console.error(`No such user document for userId: ${userId}`);
                     return {};
                 }
             } catch (error) {
-                // console.error("Error fetching user progress:", error);
+                console.error("Error fetching user progress:", error);
                 return {};
             }
         };

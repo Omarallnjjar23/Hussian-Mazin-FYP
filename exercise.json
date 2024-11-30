@@ -56,57 +56,82 @@
             ]
         },
         {
+            "lessonTitle": "ANY and ALL in SQL",
+            "questions": [
+                {
+                    "question": "Write an SQL query to find employees from the 'employees' table whose salary is greater than any salary in the 'managers' table.",
+                    "code": true,
+                    "correctAnswer": "SELECT * FROM employees WHERE salary > ANY (SELECT salary FROM managers);"
+                },
+                {
+                    "question": "Write an SQL query to retrieve the names of employees whose age is less than all ages in the 'executives' table.",
+                    "code": true,
+                    "correctAnswer": "SELECT name FROM employees WHERE age < ALL (SELECT age FROM executives);"
+                },
+                {
+                    "question": "Write an SQL query to display the names of products from the 'products' table where the price is greater than or equal to any price in the 'discounts' table.",
+                    "code": true,
+                    "correctAnswer": "SELECT product_name FROM products WHERE price >= ANY (SELECT price FROM discounts);"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "Operators in SQL",
+            "questions": [
+                {
+                    "question": "Write an SQL query to retrieve all employees from the 'employees' table whose age is between 25 and 35.",
+                    "code": true,
+                    "correctAnswer": "SELECT * FROM employees WHERE age BETWEEN 25 AND 35;"
+                },
+                {
+                    "question": "Write an SQL query to display the names of employees from the 'employees' table who have 'John' or 'Jane' in their name.",
+                    "code": true,
+                    "correctAnswer": "SELECT name FROM employees WHERE name LIKE '%John%' OR name LIKE '%Jane%';"
+                },
+                {
+                    "question": "Write an SQL query to find all employees in the 'employees' table whose salary is greater than 5000 and are in the 'IT' department.",
+                    "code": true,
+                    "correctAnswer": "SELECT * FROM employees WHERE salary > 5000 AND department = 'IT';"
+                }
+            ]
+        },
+        {
             "lessonTitle": "Basic SQL Queries",
             "questions": [
                 {
-                    "question": "What does the WHERE clause do in SQL?",
-                    "options": [
-                        "Filters rows",
-                        "Sorts results",
-                        "Limits columns",
-                        "Joins tables"
-                    ],
-                    "correctAnswer": "Filters rows"
+                    "question": "Write an SQL query to retrieve the names of all employees from the 'employees' table.",
+                    "code": true,
+                    "correctAnswer": "SELECT name FROM employees;"
                 },
                 {
-                    "question": "Which SQL keyword is used to return only unique values?",
-                    "options": [
-                        "DISTINCT",
-                        "UNIQUE",
-                        "EXCLUSIVE",
-                        "ONLY"
-                    ],
-                    "correctAnswer": "DISTINCT"
+                    "question": "Write an SQL query to display all columns from the 'employees' table where the age is greater than 30.",
+                    "code": true,
+                    "correctAnswer": "SELECT * FROM employees WHERE age > 30;"
                 },
                 {
-                    "question": "Which operator is used to match a pattern in SQL?",
-                    "options": [
-                        "LIKE",
-                        "MATCH",
-                        "PATTERN",
-                        "FIND"
-                    ],
-                    "correctAnswer": "LIKE"
+                    "question": "Write an SQL query to sort the 'employees' table by 'salary' in ascending order.",
+                    "code": true,
+                    "correctAnswer": "SELECT * FROM employees ORDER BY salary ASC;"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "UNION in SQL",
+            "questions": [
+                {
+                    "question": "Write an SQL query to retrieve the names of all employees from the 'employees' table and the 'managers' table, ensuring no duplicate names are included in the result.",
+                    "code": true,
+                    "correctAnswer": "SELECT name FROM employees\nUNION\nSELECT name FROM managers;"
                 },
                 {
-                    "question": "How do you sort query results in descending order?",
-                    "options": [
-                        "ORDER BY DESC",
-                        "SORT DESC",
-                        "DESCEND",
-                        "ORDER DESC"
-                    ],
-                    "correctAnswer": "ORDER BY DESC"
+                    "question": "Write an SQL query to combine the results of two tables, 'customers_2023' and 'customers_2024', retrieving all customer IDs from both tables, including duplicates.",
+                    "code": true,
+                    "correctAnswer": "SELECT customer_id FROM customers_2023\nUNION ALL\nSELECT customer_id FROM customers_2024;"
                 },
                 {
-                    "question": "What does SELECT * FROM table_name do?",
-                    "options": [
-                        "Selects all columns",
-                        "Selects unique columns",
-                        "Selects specific columns",
-                        "Deletes all columns"
-                    ],
-                    "correctAnswer": "Selects all columns"
+                    "question": "Write an SQL query to list all product names from the 'products_us' table and the 'products_eu' table, ensuring no duplicates in the final result.",
+                    "code": true,
+                    "correctAnswer": "SELECT product_name FROM products_us\nUNION\nSELECT product_name FROM products_eu;"
                 }
             ]
         },
@@ -114,109 +139,80 @@
             "lessonTitle": "Data Manipulation in SQL",
             "questions": [
                 {
-                    "question": "Which command is used to update data in a table?",
-                    "options": [
-                        "UPDATE",
-                        "ALTER",
-                        "MODIFY",
-                        "CHANGE"
-                    ],
-                    "correctAnswer": "UPDATE"
+                    "question": "Write an SQL query to update the salary of an employee with ID 101 to 7500.",
+                    "code": true,
+                    "correctAnswer": "UPDATE employees SET salary = 7500 WHERE id = 101;"
                 },
                 {
-                    "question": "Which SQL command is used to remove rows from a table?",
-                    "options": [
-                        "DELETE",
-                        "DROP",
-                        "REMOVE",
-                        "TRUNCATE"
-                    ],
-                    "correctAnswer": "DELETE"
+                    "question": "Write an SQL query to delete all employees from the 'employees' table who are older than 60.",
+                    "code": true,
+                    "correctAnswer": "DELETE FROM employees WHERE age > 60;"
                 },
                 {
-                    "question": "How can you add a new row in a table?",
-                    "options": [
-                        "INSERT INTO",
-                        "ADD ROW",
-                        "NEW ROW",
-                        "APPEND"
-                    ],
-                    "correctAnswer": "INSERT INTO"
-                },
-                {
-                    "question": "What does the SET clause do in SQL?",
-                    "options": [
-                        "Specifies column values",
-                        "Selects columns",
-                        "Sets permissions",
-                        "Deletes columns"
-                    ],
-                    "correctAnswer": "Specifies column values"
-                },
-                {
-                    "question": "Which command would you use to delete all records from a table but keep its structure?",
-                    "options": [
-                        "TRUNCATE",
-                        "DELETE",
-                        "DROP",
-                        "REMOVE"
-                    ],
-                    "correctAnswer": "TRUNCATE"
+                    "question": "Write an SQL query to insert a new employee record into the 'employees' table.",
+                    "code": true,
+                    "correctAnswer": "INSERT INTO employees (id, name, age, salary) VALUES (102, 'John Doe', 29, 5000);"
                 }
             ]
         },
         {
+            "lessonTitle": "SQL Wildcards",
+            "questions": [
+                {
+                    "question": "Write an SQL query to retrieve all customer names from the 'customers' table that start with the letter 'A'.",
+                    "code": true,
+                    "correctAnswer": "SELECT name FROM customers WHERE name LIKE 'A%';"
+                },
+                {
+                    "question": "Write an SQL query to find all products in the 'products' table where the product name contains the word 'phone' (case-insensitive).",
+                    "code": true,
+                    "correctAnswer": "SELECT product_name FROM products WHERE product_name LIKE '%phone%';"
+                },
+                {
+                    "question": "Write an SQL query to display the names of employees from the 'employees' table whose names have exactly five characters.",
+                    "code": true,
+                    "correctAnswer": "SELECT name FROM employees WHERE name LIKE '_____';"
+                }
+            ]
+        },
+        {
+            "lessonTitle": "JOIN",
+            "questions": [
+              {
+                "question": "Write an SQL query to retrieve the employee names and their corresponding department names from the 'employees' and 'departments' tables. Use an INNER JOIN to match rows where 'employees.department_id' equals 'departments.department_id'.",
+                "code": true,
+                "correctAnswer": "SELECT employees.name AS employee_name, departments.name AS department_name\nFROM employees\nINNER JOIN departments ON employees.department_id = departments.department_id;"
+              },
+              {
+                "question": "Write an SQL query to retrieve all customers' names from the 'customers' table and their corresponding orders from the 'orders' table. Include customers who have not made any orders using a LEFT JOIN.",
+                "code": true,
+                "correctAnswer": "SELECT customers.name AS customer_name, orders.order_id AS order_id\nFROM customers\nLEFT JOIN orders ON customers.customer_id = orders.customer_id;"
+              },
+              {
+                "question": "Write an SQL query to retrieve the names of all products from the 'products' table and the names of their suppliers from the 'suppliers' table. Include suppliers who do not supply any products using a RIGHT JOIN.",
+                "code": true,
+                "correctAnswer": "SELECT products.product_name, suppliers.supplier_name\nFROM products\nRIGHT JOIN suppliers ON products.supplier_id = suppliers.supplier_id;"
+              }
+            ]
+          },
+          
+        {
             "lessonTitle": "Working with Joins in SQL",
             "questions": [
                 {
-                    "question": "Which join returns all records when there is a match in either table?",
-                    "options": [
-                        "FULL OUTER JOIN",
-                        "INNER JOIN",
-                        "LEFT JOIN",
-                        "RIGHT JOIN"
-                    ],
-                    "correctAnswer": "FULL OUTER JOIN"
+                    "question": "Write an SQL query to perform an INNER JOIN between 'employees' and 'departments' on the 'department_id' column.",
+                    "code": true,
+                    "correctAnswer": "SELECT * FROM employees INNER JOIN departments ON employees.department_id = departments.department_id;"
                 },
                 {
-                    "question": "What type of join returns only matching rows from both tables?",
-                    "options": [
-                        "INNER JOIN",
-                        "OUTER JOIN",
-                        "CROSS JOIN",
-                        "SELF JOIN"
-                    ],
-                    "correctAnswer": "INNER JOIN"
+                    "question": "Write an SQL query to perform a LEFT JOIN between 'employees' and 'projects' on 'employee_id'.",
+                    "code": true,
+                    "correctAnswer": "SELECT * FROM employees LEFT JOIN projects ON employees.id = projects.employee_id;"
                 },
                 {
-                    "question": "Which join includes all records from the left table and matched records from the right?",
-                    "options": [
-                        "LEFT JOIN",
-                        "RIGHT JOIN",
-                        "FULL JOIN",
-                        "CROSS JOIN"
-                    ],
-                    "correctAnswer": "LEFT JOIN"
-                },
-                {
-                    "question": "Which join includes all records from the right table and matched records from the left?",
-                    "options": [
-                        "RIGHT JOIN",
-                        "LEFT JOIN",
-                        "FULL JOIN",
-                        "INNER JOIN"
-                    ],
-                    "correctAnswer": "RIGHT JOIN"
-                },
-                {
-                    "question": "What does the USING clause do in a SQL join?",
-                    "options": [
-                        "Specifies common columns",
-                        "Limits rows",
-                        "Filters duplicates",
-                        "Sorts results"
-                    ],
-                    "correctAnswer": "Specifies common columns"
+                    "question": "Write an SQL query to perform a FULL OUTER JOIN between 'managers' and 'departments' on 'department_id'.",
+                    "code": true,
+                    "correctAnswer": "SELECT * FROM managers FULL OUTER JOIN departments ON managers.department_id = departments.department_id;"
                 }
             ]
         },
@@ -224,54 +220,19 @@
             "lessonTitle": "Using Aggregate Functions in SQL",
             "questions": [
                 {
-                    "question": "Which function calculates the total sum of a column?",
-                    "options": [
-                        "SUM()",
-                        "COUNT()",
-                        "TOTAL()",
-                        "ADD()"
-                    ],
-                    "correctAnswer": "SUM()"
+                    "question": "Write an SQL query to calculate the average salary of employees in the 'employees' table.",
+                    "code": true,
+                    "correctAnswer": "SELECT AVG(salary) FROM employees;"
                 },
                 {
-                    "question": "Which function is used to count the number of rows?",
-                    "options": [
-                        "COUNT()",
-                        "SUM()",
-                        "NUMBER()",
-                        "TALLY()"
-                    ],
-                    "correctAnswer": "COUNT()"
+                    "question": "Write an SQL query to find the maximum salary in the 'employees' table.",
+                    "code": true,
+                    "correctAnswer": "SELECT MAX(salary) FROM employees;"
                 },
                 {
-                    "question": "What does the AVG() function do?",
-                    "options": [
-                        "Calculates average",
-                        "Calculates sum",
-                        "Counts rows",
-                        "Returns highest value"
-                    ],
-                    "correctAnswer": "Calculates average"
-                },
-                {
-                    "question": "Which function finds the highest value in a column?",
-                    "options": [
-                        "MAX()",
-                        "HIGH()",
-                        "UPPER()",
-                        "SUM()"
-                    ],
-                    "correctAnswer": "MAX()"
-                },
-                {
-                    "question": "Which function finds the lowest value in a column?",
-                    "options": [
-                        "MIN()",
-                        "LOW()",
-                        "BOTTOM()",
-                        "AVG()"
-                    ],
-                    "correctAnswer": "MIN()"
+                    "question": "Write an SQL query to count the number of employees in each department.",
+                    "code": true,
+                    "correctAnswer": "SELECT department_id, COUNT(*) FROM employees GROUP BY department_id;"
                 }
             ]
         },
@@ -331,57 +292,42 @@
             ]
         },
         {
+            "lessonTitle": "NULL Functions in SQL",
+            "questions": [
+                {
+                    "question": "Write an SQL query to display the names of employees and their salaries. If the salary is NULL, display 'Not Assigned' instead of NULL.",
+                    "code": true,
+                    "correctAnswer": "SELECT name, \n       COALESCE(salary, 'Not Assigned') AS salary\nFROM employees;"
+                },
+                {
+                    "question": "Write an SQL query to find all records in the 'orders' table where the 'delivery_date' column is NULL.",
+                    "code": true,
+                    "correctAnswer": "SELECT * FROM orders WHERE delivery_date IS NULL;"
+                },
+                {
+                    "question": "Write an SQL query to display the total sales from the 'sales' table. If a value in the 'amount' column is NULL, treat it as 0 in the total calculation.",
+                    "code": true,
+                    "correctAnswer": "SELECT SUM(COALESCE(amount, 0)) AS total_sales\nFROM sales;"
+                }
+            ]
+        },
+        {
             "lessonTitle": "Creating and Managing Indexes in SQL",
             "questions": [
                 {
-                    "question": "What is the purpose of an index in a SQL database?",
-                    "options": [
-                        "To speed up queries",
-                        "To join tables",
-                        "To prevent duplicates",
-                        "To enforce constraints"
-                    ],
-                    "correctAnswer": "To speed up queries"
+                    "question": "Write an SQL query to create an index on the 'last_name' column of the 'employees' table.",
+                    "code": true,
+                    "correctAnswer": "CREATE INDEX idx_last_name ON employees(last_name);"
                 },
                 {
-                    "question": "Which command is used to create an index on a table?",
-                    "options": [
-                        "CREATE INDEX",
-                        "ADD INDEX",
-                        "INDEX TABLE",
-                        "MAKE INDEX"
-                    ],
-                    "correctAnswer": "CREATE INDEX"
+                    "question": "Write an SQL query to drop an index named 'idx_email' from the 'employees' table.",
+                    "code": true,
+                    "correctAnswer": "DROP INDEX idx_email ON employees;"
                 },
                 {
-                    "question": "What is a unique index?",
-                    "options": [
-                        "An index that prevents duplicates",
-                        "An index for primary keys",
-                        "An index on NULL values",
-                        "An index on joins"
-                    ],
-                    "correctAnswer": "An index that prevents duplicates"
-                },
-                {
-                    "question": "How does an index improve query performance?",
-                    "options": [
-                        "By reducing search time",
-                        "By compressing data",
-                        "By joining tables",
-                        "By updating data"
-                    ],
-                    "correctAnswer": "By reducing search time"
-                },
-                {
-                    "question": "What is the impact of too many indexes on a table?",
-                    "options": [
-                        "Slower data modification",
-                        "Faster data deletion",
-                        "Decreased disk usage",
-                        "Enhanced indexing"
-                    ],
-                    "correctAnswer": "Slower data modification" 
+                    "question": "Write an SQL query to create a unique index on the 'email' column of the 'employees' table.",
+                    "code": true,
+                    "correctAnswer": "CREATE UNIQUE INDEX idx_unique_email ON employees(email);"
                 }
             ]
         },
@@ -441,281 +387,6 @@
             ]
         },
         {
-            "lessonTitle": "SQL Wildcards",
-            "questions": [
-                {
-                    "question": "Which wildcard pattern would you use to find entries that end with 'son'?",
-                    "options": [
-                        "LIKE 'son%'",
-                        "LIKE '%son'",
-                        "LIKE '_son'",
-                        "LIKE '%s_o_n'"
-                    ],
-                    "correctAnswer": "LIKE '%son'"
-                },
-                {
-                    "question": "If you want to find names that contain exactly five characters, with the first letter being 'J', which wildcard pattern would you use?",
-                    "options": [
-                        "LIKE 'J%____'",
-                        "LIKE 'J____'",
-                        "LIKE 'J_%_____'",
-                        "LIKE '%J____%'"
-                    ],
-                    "correctAnswer": "LIKE 'J____'"
-                },
-                {
-                    "question": "How would you use a wildcard to find all rows where a column value contains the letter 'e' at the second position?",
-                    "options": [
-                        "LIKE 'e%'",
-                        "LIKE '_e%'",
-                        "LIKE '%e%'",
-                        "LIKE 'e_%'"
-                    ],
-                    "correctAnswer": "LIKE '_e%'"
-                },
-                {
-                    "question": "Which wildcard pattern would find entries with a letter in the second position and any characters after that?",
-                    "options": [
-                        "LIKE '_%'",
-                        "LIKE '__%'",
-                        "LIKE '%%'",
-                        "LIKE '%_'"
-                    ],
-                    "correctAnswer": "LIKE '_%'"
-                },
-                {
-                    "question": "If you wanted to find records where the name starts with 'M' and ends with 'n', which pattern would work best?",
-                    "options": [
-                        "LIKE 'M%n'",
-                        "LIKE '%M%n'",
-                        "LIKE '_Mn_'",
-                        "LIKE 'M__n'"
-                    ],
-                    "correctAnswer": "LIKE 'M%n'"
-                }
-            ]
-        },
-        {
-            "lessonTitle": "NULL Functions in SQL",
-            "questions": [
-                {
-                    "question": "Which SQL function is commonly used to replace NULL values with a specified value?",
-                    "options": [
-                        "ISNULL()",
-                        "NULLIF()",
-                        "COALESCE()",
-                        "NVL()"
-                    ],
-                    "correctAnswer": "ISNULL()"
-                },
-                {
-                    "question": "What does the COALESCE() function do when multiple arguments are provided?",
-                    "options": [
-                        "Returns the first non-NULL value among the arguments",
-                        "Checks if all arguments are NULL",
-                        "Returns NULL if any argument is NULL",
-                        "Combines all arguments into one"
-                    ],
-                    "correctAnswer": "Returns the first non-NULL value among the arguments"
-                },
-                {
-                    "question": "Which SQL function can be used to check if two expressions are equal, but returns NULL if they are?",
-                    "options": [
-                        "COALESCE()",
-                        "NULLIF()",
-                        "IFNULL()",
-                        "ISNULL()"
-                    ],
-                    "correctAnswer": "NULLIF()"
-                },
-                {
-                    "question": "If you want to replace NULL values in Oracle SQL, which function would you use?",
-                    "options": [
-                        "IFNULL()",
-                        "COALESCE()",
-                        "NVL()",
-                        "ISNULL()"
-                    ],
-                    "correctAnswer": "NVL()"
-                },
-                {
-                    "question": "How does the COALESCE() function differ from ISNULL() when working with NULL values?",
-                    "options": [
-                        "COALESCE() can take multiple arguments, ISNULL() only two",
-                        "ISNULL() works only with numbers",
-                        "COALESCE() returns NULL if any argument is NULL",
-                        "ISNULL() can handle only text values"
-                    ],
-                    "correctAnswer": "COALESCE() can take multiple arguments, ISNULL() only two"
-                }
-            ]
-        },
-        {
-            "lessonTitle": "UNION in SQL",
-            "questions": [
-                {
-                    "question": "What does the UNION operator do?",
-                    "options": [
-                        "Combines the result sets of two or more SELECT statements",
-                        "Returns the intersection of two SELECT statements",
-                        "Joins two tables",
-                        "Groups rows together"
-                    ],
-                    "correctAnswer": "Combines the result sets of two or more SELECT statements"
-                },
-                {
-                    "question": "Which of the following is true about UNION?",
-                    "options": [
-                        "It eliminates duplicate rows",
-                        "It does not eliminate duplicate rows",
-                        "It requires the same number of columns",
-                        "Both A and C"
-                    ],
-                    "correctAnswer": "Both A and C"
-                },
-                {
-                    "question": "What is the difference between UNION and UNION ALL?",
-                    "options": [
-                        "UNION ALL includes duplicates",
-                        "UNION does not include duplicates",
-                        "They are the same",
-                        "UNION is faster"
-                    ],
-                    "correctAnswer": "UNION ALL includes duplicates"
-                },
-                {
-                    "question": "Which clause is used to sort the final result set of a UNION?",
-                    "options": [
-                        "ORDER BY",
-                        "GROUP BY",
-                        "HAVING",
-                        "WHERE"
-                    ],
-                    "correctAnswer": "ORDER BY"
-                },
-                {
-                    "question": "What happens if the SELECT statements in a UNION have different column names?",
-                    "options": [
-                        "The column names from the first SELECT are used",
-                        "The column names from the second SELECT are used",
-                        "An error occurs",
-                        "They must match exactly"
-                    ],
-                    "correctAnswer": "The column names from the first SELECT are used"
-                }
-            ]
-        },
-        {
-            "lessonTitle": "ANY and ALL in SQL",
-            "questions": [
-                {
-                    "question": "What does the ANY operator do?",
-                    "options": [
-                        "Returns true if any of the subquery values meet the condition",
-                        "Returns true only if all subquery values meet the condition",
-                        "Compares values in two columns",
-                        "Eliminates duplicates"
-                    ],
-                    "correctAnswer": "Returns true if any of the subquery values meet the condition"
-                },
-                {
-                    "question": "What does the ALL operator do?",
-                    "options": [
-                        "Returns true if all of the subquery values meet the condition",
-                        "Returns true if any of the subquery values meet the condition",
-                        "Compares values in two columns",
-                        "Counts NULL values"
-                    ],
-                    "correctAnswer": "Returns true if all of the subquery values meet the condition"
-                },
-                {
-                    "question": "Which operator can be used to compare a value against a list of values?",
-                    "options": [
-                        "ANY",
-                        "ALL",
-                        "IN",
-                        "EXISTS"
-                    ],
-                    "correctAnswer": "ANY"
-                },
-                {
-                    "question": "What is the result of a comparison using ANY if no values meet the condition?",
-                    "options": [
-                        "True",
-                        "False",
-                        "NULL",
-                        "An error occurs"
-                    ],
-                    "correctAnswer": "False"
-                },
-                {
-                    "question": "Which statement is correct about combining ANY and ALL?",
-                    "options": [
-                        "They can be used together in a single query",
-                        "They cannot be used together",
-                        "Only ALL can be used with aggregates",
-                        "Only ANY can be used with aggregates"
-                    ],
-                    "correctAnswer": "They can be used together in a single query"
-                }
-            ]
-        },
-        {
-            "lessonTitle": "CASE in SQL",
-            "questions": [
-                {
-                    "question": "What does the CASE statement do?",
-                    "options": [
-                        "Allows conditional logic in SQL queries",
-                        "Sorts results",
-                        "Filters records",
-                        "Joins tables"
-                    ],
-                    "correctAnswer": "Allows conditional logic in SQL queries"
-                },
-                {
-                    "question": "Which keyword is used to specify the default value in a CASE statement?",
-                    "options": [
-                        "DEFAULT",
-                        "ELSE",
-                        "END",
-                        "THEN"
-                    ],
-                    "correctAnswer": "ELSE"
-                },
-                {
-                    "question": "What is the correct syntax for a simple CASE statement?",
-                    "options": [
-                        "CASE column_name WHEN value1 THEN result1",
-                        "IF column_name = value1 THEN result1",
-                        "SELECT CASE WHEN condition THEN result1",
-                        "CASE WHEN condition THEN result1"
-                    ],
-                    "correctAnswer": "CASE column_name WHEN value1 THEN result1"
-                },
-                {
-                    "question": "Can the CASE statement be used in the SELECT clause?",
-                    "options": [
-                        "Yes",
-                        "No",
-                        "Only in WHERE",
-                        "Only in ORDER BY"
-                    ],
-                    "correctAnswer": "Yes"
-                },
-                {
-                    "question": "What is the result of the CASE statement if no conditions are met?",
-                    "options": [
-                        "NULL",
-                        "An error",
-                        "The first condition",
-                        "The default value specified with ELSE"
-                    ],
-                    "correctAnswer": "The default value specified with ELSE"
-                }
-            ]
-        },
-        {
             "lessonTitle": "Comments in SQL",
             "questions": [
                 {
@@ -771,57 +442,22 @@
             ]
         },
         {
-            "lessonTitle": "Operators in SQL",
+            "lessonTitle": "CASE in SQL",
             "questions": [
                 {
-                    "question": "Which operator is used for equality in SQL?",
-                    "options": [
-                        "=",
-                        "<>",
-                        ">",
-                        "<"
-                    ],
-                    "correctAnswer": "="
+                    "question": "Write an SQL query to display the employee name and a new column 'Salary_Level' that shows 'High' if the salary is greater than 7000, 'Medium' if it is between 4000 and 7000, and 'Low' if it is less than 4000.",
+                    "code": true,
+                    "correctAnswer": "SELECT name, \n       CASE \n           WHEN salary > 7000 THEN 'High'\n           WHEN salary BETWEEN 4000 AND 7000 THEN 'Medium'\n           ELSE 'Low'\n       END AS Salary_Level\nFROM employees;"
                 },
                 {
-                    "question": "What does the AND operator do?",
-                    "options": [
-                        "Combines two conditions",
-                        "Returns true if either condition is true",
-                        "Negates a condition",
-                        "None of the above"
-                    ],
-                    "correctAnswer": "Combines two conditions"
+                    "question": "Write an SQL query to display product names and a new column 'Discounted_Price' where a 10% discount is applied if the price is greater than 100, and no discount is applied otherwise.",
+                    "code": true,
+                    "correctAnswer": "SELECT product_name, \n       CASE \n           WHEN price > 100 THEN price * 0.9\n           ELSE price\n       END AS Discounted_Price\nFROM products;"
                 },
                 {
-                    "question": "Which operator is used for logical negation?",
-                    "options": [
-                        "AND",
-                        "OR",
-                        "NOT",
-                        "XOR"
-                    ],
-                    "correctAnswer": "NOT"
-                },
-                {
-                    "question": "What does the OR operator do?",
-                    "options": [
-                        "Returns true if both conditions are true",
-                        "Returns true if at least one condition is true",
-                        "Negates a condition",
-                        "None of the above"
-                    ],
-                    "correctAnswer": "Returns true if at least one condition is true"
-                },
-                {
-                    "question": "Which operator is used for pattern matching in SQL?",
-                    "options": [
-                        "LIKE",
-                        "MATCH",
-                        "REGEXP",
-                        "IN"
-                    ],
-                    "correctAnswer": "LIKE"
+                    "question": "Write an SQL query to show student names and their grades as 'Pass' if their score is 50 or above and 'Fail' otherwise.",
+                    "code": true,
+                    "correctAnswer": "SELECT student_name, \n       CASE \n           WHEN score >= 50 THEN 'Pass'\n           ELSE 'Fail'\n       END AS Grade\nFROM students;"
                 }
             ]
         }

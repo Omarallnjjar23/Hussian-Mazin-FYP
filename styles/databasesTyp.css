@@ -129,9 +129,10 @@ body {
 
 .video-container {
     position: relative;
-    /* padding-bottom: 56.25%; */
-    /* 16:9 Aspect Ratio */
+    padding-top: 56.25%;
     height: 0;
+    margin-bottom: 20px;
+    margin-top: 10px;
 
     border-radius: 8px;
     /* Rounded corners */
@@ -385,6 +386,7 @@ body {
 .review-quiz {
     width: 150px;
     border: none;
+    margin-top: 10px;
     background-color: #65A9C2;
     color: white;
     padding: 5px;
@@ -420,8 +422,8 @@ body {
 }
 
 .close-modal {
-    width: 750px;
-    align-self: center;
+    width: 250px;
+    /* align-self: center; */
     border: none;
     background-color: #0E3D57;
     color: white;
@@ -651,4 +653,25 @@ body {
     width: 100%;
     background-color: #65A9C2;
     transition: width 10s linear;
+}
+
+textarea.code-input {
+    font-family: "Courier New", Courier, monospace; /* Monospaced font for code */
+    font-size: 14px; /* Adjust font size */
+    padding: 8px; /* Add padding for better appearance */
+    border: 1px solid #ccc; /* Border similar to an input */
+    border-radius: 4px; /* Rounded corners */
+    outline: none; /* Remove default outline */
+    width: 100%; /* Full width */
+    box-sizing: border-box; /* Include padding in width calculation */
+    background-color: #f9f9f9; /* Slight background color */
+}
+
+textarea.code-input:focus {
+    border-color: #007BFF; /* Change border color on focus */
+    background-color: #fff; /* Highlight background on focus */
+}
+
+.margin-top-10 {
+    margin-top: 10px;
 }
