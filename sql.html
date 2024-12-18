@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="./styles/toast.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="styles/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
     <!-- pdf.js Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <!-- Toastr JS -->
@@ -148,6 +150,72 @@
                 profileSection.style.display = profileSection.style.display === 'block' ? 'none' : 'block';
             };
 
+            // Function to calculate and display user progress
+            async function calculateUserProgress(userId) {
+                try {
+                    // Firestore initialization (assuming it's already configured elsewhere in your project)
+                    // const currentUser = auth.currentUser;
+                    console.log('userId', userId);
+
+                    if (!userId) {
+                        console.error('No user is currently logged in!');
+                        return;
+                    }
+                    // const userId = currentUser.uid;
+                    const usersRef = collection(db, 'users');
+
+                    // Fetch the user data from Firestore
+                    const userDoc = await getDoc(doc(usersRef, userId));
+
+                    if (!userDoc.exists) {
+                        console.error('User not found!');
+                        return;
+                    }
+
+                    const userData = userDoc.data();
+                    // console.log('userData.quizzes', userData);
+
+                    if (!userData.quizzes) {
+                        console.error('quizzes not found!');
+                        return;
+                    }
+
+                    // Get the number of completed lessons (length of the quizzes object)
+                    const completedLessons = Object.keys(userData.quizzes || {}).length;
+
+                    // Total number of lessons
+                    const totalLessons = 16;
+
+                    // Calculate the star rating
+                    const stars = Math.round((completedLessons / totalLessons) * 5);
+
+                    // Generate star icons using Font Awesome
+                    let starIcons = '';
+                    for (let i = 0; i < stars; i++) {
+                        starIcons += '<i class="fas fa-star" style="color: gold; font-size: 1.5em;"></i> ';
+                    }
+                    for (let i = stars; i < 5; i++) {
+                        starIcons += '<i class="far fa-star" style="color: gold; font-size: 1.5em;"></i> ';
+                    }
+
+                    // Display progress and star rating
+                    console.log(`Progress: ${completedLessons}/${totalLessons}`);
+                    console.log(`Rating: ${stars}/5`);
+
+                    // Render the progress on your webpage
+                    const progressElement = document.getElementById('progress');
+                    if (progressElement) {
+                        progressElement.innerHTML = `
+                 
+                        <p>${starIcons} (${stars}/5)</p>
+                    `;
+                    }
+
+                } catch (error) {
+                    console.error('Error calculating progress:', error);
+                }
+            }
+
             ////////////////////////////////////////////////////////////////////////////////////
             onAuthStateChanged(auth, async (user) => {
                 // console.log('current user', user ? user.email : null);
@@ -156,6 +224,7 @@
                 if (user) {
                     const userId = user.uid;
 
+                    calculateUserProgress(userId);
                     // Fetch user progress
                     const startCourseBtn = document.getElementById('startCourseBtn');
                     // console.log('startCourseBtn :', startCourseBtn);
@@ -186,10 +255,9 @@
                 const courseOverview = document.getElementById('courseOverview');
                 const lessonsContainer = document.getElementById('lessonsContainer');
                 courseOverview.style.display = 'none';
-                lessonsContainer.style.marginTop = '220px';
+                lessonsContainer.style.marginTop = '50px';
                 document.getElementById('lessonsContainer').style.display = 'flex'; // Show lessons container
             });
-
             /////////////////////////////////////////////////////////////////////////////////
             let currentLessonContent = null; // Track the currently displayed lesson content
 
@@ -335,7 +403,6 @@
                     const userData = userSnapshot.data();
                     const isAdmin = userData.role === 'admin';
                     // console.log('User role:', userData.role);
-
                     // Fetch lessons
                     const lessonsRef = collection(db, 'Courses', 'SQL', 'lessons');
                     const lessonsSnapshot = await getDocs(lessonsRef);
@@ -468,9 +535,11 @@
                 const lessonsContainer = document.getElementById('lessonsContainer');
                 const courseOverview = document.getElementById('courseOverview');
                 const startLessonButton = lessonElement.querySelector('.start-lesson');
+
                 const lessonText = document.createElement('div');
 
                 startLessonButton.addEventListener('click', async () => {
+
                     const allLessonButtons = document.querySelectorAll('.view-lesson');
                     allLessonButtons.forEach((button) => {
                         button.disabled = false; // Enable all buttons
@@ -479,6 +548,11 @@
                     const lessonContent1 = document.querySelector('.lessonContent1');
                     if (lessonContent1) {
                         document.body.removeChild(lessonContent1); // Close the modal
+                    }
+                    // Clear any existing lesson content
+                    const existingLessonContent = document.querySelector('.lessonContent');
+                    if (existingLessonContent) {
+                        existingLessonContent.remove(); // Remove the previously displayed lesson content
                     }
                     // console.log(' start lesson cliked');
                     startLessonButton.disabled = true;
@@ -940,7 +1014,6 @@
                     modal.style.display = "none";
                 }, 10000);
             }
-
             const submitQuiz = async (userId, lessonId, userAnswers) => {
 
                 // Reference to the user's document in the 'users' collection
@@ -1034,7 +1107,6 @@
                 return questionsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             };
         });
-
 
         // Function to fetch the user's progress from Firestore
         const fetchUserProgress = async (userId) => {
@@ -1134,7 +1206,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Header Content -->
             <div class="header_container">
                 <div class="container">
@@ -1202,9 +1273,12 @@
                     </div>
                 </div>
             </div>
+            <div id="progress" style="font-family: Arial, sans-serif; font-size: 18px;">
+                <!-- Progress details will be dynamically inserted here -->
+            </div>
             <!-- Overview Section -->
             <div id="courseOverview" class="overview-section text-center mb-5"
-                style="max-width: 800px; margin: 200px auto 0 auto;">
+                style="max-width: 800px; margin: 50px auto 0 auto;">
                 <p style="font-size: 1.2rem; color: #555;">
                     This course provides a comprehensive foundation in SQL databases, covering the essential concepts
                     needed

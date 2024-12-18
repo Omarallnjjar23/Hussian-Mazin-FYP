@@ -14,7 +14,6 @@ body {
     gap: 20px;
     justify-content: center;
     padding: 20px;
-    margin-top: 20px;
 }
 
 
@@ -477,7 +476,7 @@ body {
     /* Ensures long words break to fit within their container */
     word-break: break-word;
     /* Breaks words at arbitrary points if they are too long */
-    max-width: 100%;
+    min-width: 100%;
     /* Ensures the content does not exceed the parent width */
     line-height: 1.5;
     /* Improves readability by adding space between lines */
@@ -656,22 +655,40 @@ body {
 }
 
 textarea.code-input {
-    font-family: "Courier New", Courier, monospace; /* Monospaced font for code */
-    font-size: 14px; /* Adjust font size */
-    padding: 8px; /* Add padding for better appearance */
-    border: 1px solid #ccc; /* Border similar to an input */
-    border-radius: 4px; /* Rounded corners */
-    outline: none; /* Remove default outline */
-    width: 100%; /* Full width */
-    box-sizing: border-box; /* Include padding in width calculation */
-    background-color: #f9f9f9; /* Slight background color */
+    font-family: "Courier New", Courier, monospace;
+    /* Monospaced font for code */
+    font-size: 14px;
+    /* Adjust font size */
+    padding: 8px;
+    /* Add padding for better appearance */
+    border: 1px solid #ccc;
+    /* Border similar to an input */
+    border-radius: 4px;
+    /* Rounded corners */
+    outline: none;
+    /* Remove default outline */
+    width: 100%;
+    /* Full width */
+    box-sizing: border-box;
+    /* Include padding in width calculation */
+    background-color: #f9f9f9;
+    /* Slight background color */
 }
 
 textarea.code-input:focus {
-    border-color: #007BFF; /* Change border color on focus */
-    background-color: #fff; /* Highlight background on focus */
+    border-color: #007BFF;
+    /* Change border color on focus */
+    background-color: #fff;
+    /* Highlight background on focus */
 }
 
 .margin-top-10 {
     margin-top: 10px;
+}
+
+#progress {
+    margin-top: 150px;
+    display: flex;
+    justify-content: right;
+    margin-right: 98px;
 }

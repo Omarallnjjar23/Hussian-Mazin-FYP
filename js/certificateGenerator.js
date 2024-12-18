@@ -82,3 +82,35 @@ export async function generateCertificate(userName, courseName, totalAverage, co
         console.error('jsPDF library is not loaded');
     }
 }
+// import { imageUrl } from './imagCertifcate';
+// export async function generateCertificate(userName) {
+//     if (window.jspdf) {
+//         const { jsPDF } = window.jspdf; // Access jsPDF library
+
+//         // Initialize PDF in landscape A4 mode
+//         const doc = new jsPDF("l", "mm", "a4");
+
+//         // Add the certificate image as the background
+//         const pageWidth = doc.internal.pageSize.width;
+//         const pageHeight = doc.internal.pageSize.height;
+
+//         // Replace with your Base64 image string
+//         const backgroundImageBase64 = imageUrl;
+
+//         // Add the background image
+//         doc.addImage(backgroundImageBase64, "JPEG", 0, 0, pageWidth, pageHeight);
+
+//         // Dynamically add the userName
+//         doc.setFont("Helvetica", "bold"); // Font style
+//         doc.setFontSize(35); // Adjust font size to match design
+//         doc.setTextColor(0, 0, 0); // Black color
+
+//         // Adjust the position for the dynamic userName
+//         doc.text(userName, pageWidth / 2, 125, { align: "center" });
+
+//         // Save the generated certificate
+//         doc.save(`${userName}-Certificate.pdf`);
+//     } else {
+//         console.error("jsPDF library is not loaded");
+//     }
+// }
