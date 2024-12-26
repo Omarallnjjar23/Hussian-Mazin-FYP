@@ -482,6 +482,9 @@ body {
     /* Improves readability by adding space between lines */
 }
 
+.lessonContent p {
+    font-size: 16px;
+}
 .card {
     padding: 20px;
     /* Adds space inside the card */
