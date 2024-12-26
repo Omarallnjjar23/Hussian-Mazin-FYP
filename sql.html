@@ -184,7 +184,7 @@
                     const completedLessons = Object.keys(userData.quizzes || {}).length;
 
                     // Total number of lessons
-                    const totalLessons = 16;
+                    const totalLessons = 15;
 
                     // Calculate the star rating
                     const stars = Math.round((completedLessons / totalLessons) * 5);
@@ -234,7 +234,7 @@
                     if (Object.keys(userProgress).length === 0) {
                         startCourseBtn.innerText = 'Start Course';
                     }
-                    else if (Object.keys(userProgress).length >= 16) {
+                    else if (Object.keys(userProgress).length >= 15) {
                         startCourseBtn.innerText = 'Restart Course';
                     }
                     else {
@@ -423,7 +423,6 @@
                             const { id: lessonId, title, lessonNumber } = lesson;
                             const lessonElement = document.createElement('div');
                             lessonElement.classList.add('lesson');
-
                             if (userProgress[lessonId]) {
                                 const marks = userProgress[lessonId].marks || 0;
                                 if (marks >= 8) {

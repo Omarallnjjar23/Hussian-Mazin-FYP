@@ -367,7 +367,7 @@
                         userName.textContent = ''; // Clear user info on sign out
                         userEmail.textContent = '';
                     }).catch((error) => {
-                        toastr.error('Error signing out:');
+                        toastr.error('Error signing out:',error);
                     });
                 });
             } else {
